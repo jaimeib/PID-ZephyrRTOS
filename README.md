@@ -1,4 +1,4 @@
-# PracticaZephyr
+# PracticaZephyrOS
 
 ## Instalación del sistema operativo Zephyr
 
