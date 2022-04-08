@@ -1,11 +1,17 @@
-# PracticaZephyrOS
+# Práctica  Zephyr OS y la placa STM32F769
 
-## Instalación del sistema operativo Zephyr
+Práctica de colaboración en el Dpto. Ingeniería Informática y Electrónica de la Universidad de Cantabria
 
-## Prueba básica con la placa STM32F769
+<em> Implantación de plataforma docente para sistemas empotrados y tecnologías industria 4.0 <em>
 
-## Prueba básica de los sensores
+## Guía de inicio
+  
+### Instalación del sistema operativo Zephyr
 
-## Prueba básica de las funciones de red
+### Prueba básica con la placa STM32F769
+
+### Prueba básica de los sensores
+
+### Prueba básica de las funciones de red
 
 ## Propuesta de práctica
