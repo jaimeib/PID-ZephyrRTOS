@@ -4,7 +4,7 @@
 
 _Implantación de plataforma docente para sistemas empotrados y tecnologías industria 4.0_
 
-### Zephyr Project 
+### Zephyr Project
 
 [Zephyr Project](https://zephyrproject.org/) es un pequeño sistema operativo de tiempo real (RTOS) para dispositivos con recursos limitados y embebidos (IoT) que admite múltiples arquitecturas. Se publica bajo la Licencia Apache 2.0. Zephyr incluye un kernel y todos los componentes y bibliotecas, controladores de dispositivos, pilas de protocolos, sistemas de archivos y actualizaciones de firmware necesarios para desarrollar una aplicación software completa.
 
@@ -24,39 +24,49 @@ Permite una amplia diversidad de aplicaciones que se benefician de las caracter�
 
 Zephyr se ha instalado correctamente en Ubuntu 20.04 LTS siguiendo las indicaciones de la documentación oficial, para la versión sobre el entorno virtual en Python, que es la recomendada en la propia documentación.
 
-[Documentación oficial del sistema operativo Zephyr Project de Linux Fundation](https://docs.zephyrproject.org/latest/index.html) - 
+[Documentación oficial del sistema operativo Zephyr Project de Linux Fundation](https://docs.zephyrproject.org/latest/index.html) -
 [Repositorio oficial](https://github.com/zephyrproject-rtos/zephyr)
 
 ### 2. Prueba básica con la placa STM32F769 Discovery Kit
 
 Para empezar a trabajar es necesario activar el entorno virtual de Python:
+
 ```
 source ~/zephyrproject/.venv/bin/activate
-``` 
-La compilación de un programa se realiza con ``west build -b <board-name> example``.
-Para pasar el binario a la memoria de la placa se ejecuta el comando ``west flash``.
-Es necesario que la compilación se realice dentro del directorio ``zephyr/``
+```
+
+La compilación de un programa se realiza con `west build -b <board-name> example`.
+Para pasar el binario a la memoria de la placa se ejecuta el comando `west flash`.
+Es necesario que la compilación se realice dentro del directorio `zephyr/`.
+
+En algunos ejemplos se utiliza impresión por el puerto serie de la placa (dispositivo /dev/ttyACM0 al conectar por USB). Para poder visualizar la información, se puede utilizar un terminal gráfico como CuteCom. Se puede instalar facilmente en Ubuntu con `apt-get install cutecom`.
 
 #### Blinky Sample
+
 ```
 west build -p auto -b stm32f769i_disco samples/basic/blinky
 ```
+
 #### Hello World! Sample
+
 ```
 west build -p auto -b stm32f769i_disco samples/hello_world
 ```
 
 #### Button Sample
+
 ```
 west build -p auto -b stm32f769i_disco samples/basic/button
 ```
 
 #### Basic Thread Sample
+
 ```
 west build -p auto -b stm32f769i_disco samples/basic/threads
 ```
 
 #### Touchscreen Sample
+
 ```
 west build -p auto -b stm32f769i_disco samples/drivers/kscan_touch/
 ```
