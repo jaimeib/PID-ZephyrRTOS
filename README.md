@@ -2,7 +2,7 @@
 
 **Práctica de colaboración en el Dpto. Ingeniería Informática y Electrónica de la Universidad de Cantabria**
 
-_Implantación de plataforma docente para sistemas empotrados y tecnologías industria 4.0_
+> _Implantación de plataforma docente para sistemas empotrados y tecnologías industria 4.0_
 
 ### Zephyr Project
 
@@ -32,7 +32,7 @@ Es compatible con los protocolos de IoT estándar de la industria: [MQTT](https:
 
 Zephyr se ha instalado correctamente en Ubuntu 20.04 LTS siguiendo las indicaciones de la documentación oficial, para la versión sobre el entorno virtual en Python, que es la recomendada en la propia documentación.
 
-[Documentación oficial del sistema operativo Zephyr Project de Linux Fundation](https://docs.zephyrproject.org/latest/index.html) -
+> [Documentación oficial del sistema operativo Zephyr Project de Linux Fundation](https://docs.zephyrproject.org/latest/index.html) -
 [Repositorio oficial](https://github.com/zephyrproject-rtos/zephyr)
 
 ### 2. Prueba básica con la placa STM32F769 Discovery Kit
@@ -51,24 +51,36 @@ Es necesario que la compilación se realice dentro del directorio `zephyr/`.
 
 #### Blinky Sample
 
+La muestra hace parpadear un LED usando la API _**GPIO**_.
 ```
 west build -p auto -b stm32f769i_disco samples/basic/blinky
 ```
 
 #### Hello World! Sample
 
+Imprime "Hello World" en la consola, conectada al puerto serie de la placa (dev/ttyACM0).
 ```
 west build -p auto -b stm32f769i_disco samples/hello_world
 ```
 
 #### Button Sample
 
+Imprime un mensaje en la consola cada vez que se presiona un botón, haciendo uso de entrada GPIO con interrupciones.
 ```
 west build -p auto -b stm32f769i_disco samples/basic/button
 ```
 
 #### Basic Thread Sample
 
+Este ejemplo demuestra la generación de varios threads mediante `K_THREAD_DEFINE()`. Genera tres hilos. Luego, cada thread se define en tiempo de compilación utilizando `K_THREAD_DEFINE`.
+
+Los dos primeros controlan cada uno un LED. Estos LED, led0 y led1,  se ejecuta en un bucle y la temporización de los leds es controlada por funciones separadas:
+- `blink0()` controla led0 y tiene un ciclo de suspensión de 100ms
+- `blink1()` controla led1 y tiene un ciclo de suspensión de 1000 ms
+
+Cuando cualquiera de estos thread alterna su LED, también envía información a una cola FIFO que identifica el thread/LED y cuántas veces se ha activado.
+
+El tercer hilo usa `printk()` para imprimir la información agregada a la cola FIFO en la consola del dispositivo.
 ```
 west build -p auto -b stm32f769i_disco samples/basic/threads
 ```
@@ -92,7 +104,17 @@ CONFIG_NET_CONFIG_MY_IPV4_ADDR="192.0.2.1"
 CONFIG_NET_CONFIG_PEER_IPV4_ADDR="192.0.2.2"
 ```
 
+#### Socket Echo Client Sample 
+
+La aplicación implementa un cliente UDP/TCP que enviará paquetes IPv4 o IPv6, esperará a que se envíen los datos y luego verificará que coincidan con los datos que se enviaron.
+
+```
+west build .p auto -b stm32f769i_disco samples/net/sockets/echo_client -- -DCONF_FILE=<config file to use>
+``` 
+
 #### Socket Echo Server Sample
+
+La aplicación implementa un servidor UDP/TCP que complementa la aplicación de muestra del cliente de eco: el servidor de eco escucha los paquetes IPv4 o IPv6 entrantes (enviados por el cliente de eco) y simplemente los devuelve.
 
 ```
 west build -p auto -b stm32f769i_disco samples/net/sockets/echo_server/ -- -DCONF_FILE="prj.conf overlay-log.conf"
@@ -123,7 +145,7 @@ mosquitto -v
 
 ### 5. Prueba básica con la plataforma ThingsBoard
 
-[Documentación oficial de ThingsBoard Community Edition](https://thingsboard.io/docs/) -
+> [Documentación oficial de ThingsBoard Community Edition](https://thingsboard.io/docs/) -
 [Repositorio oficial](https://github.com/thingsboard/thingsboard)
 
 ## Propuesta de práctica
