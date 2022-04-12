@@ -113,7 +113,7 @@ La aplicación de prueba es un cliente MQTT v3.1.1 que envía mensajes MQTT PUBL
 west build -p auto -b stm32f769i_disco samples/net/mqtt_publisher/
 ```
 
-En una terminal de Linux, ejecutaremos el broker de MQTT _mosquitto_ (se puede instalar con `apt-get mosquitto`) y lo ejecutaremos con su configuración por defecto, es decir utilando el puerto 1883:
+En una terminal de Linux, ejecutaremos el broker de MQTT _mosquitto_ (se puede instalar con `apt-get mosquitto`) y lo ejecutaremos con su configuración por defecto, es decir utilizando el puerto 1883:
 
 ```
 mosquitto -v
