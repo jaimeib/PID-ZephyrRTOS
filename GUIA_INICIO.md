@@ -147,7 +147,7 @@ Lo primero a realizar será instalar los clientes de _mosquitto_ en nuestra maqu
 sudo apt-get install mosquitto-clients
 ```
 
-Para mandar una medición a ThingsBoard, se realiza creando una publicación en el canal `v1/devices/me/telemetry`.
+Para mandar una medición a ThingsBoard, se crea una publicación en el canal `v1/devices/me/telemetry`.
 
 > En esta prueba el `$THINGSBOARD_HOST_NAME` es la dirección de la versión Live Demo: _demo.thingsboard.io_, en el caso de una instalación local: _localhost_, y el `$ACCESS_TOKEN` es el token copiado del dispositivo en el paso anterior.
 
@@ -170,4 +170,3 @@ Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/
 > Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/stm32f769_dashboard.json) ya creado, el cual se puede importar fácilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
 
 Con la configuración por defecto podemos ver que el panel muestra las gráficas de temperatura y humedad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.
-
