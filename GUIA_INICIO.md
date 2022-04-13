@@ -19,7 +19,7 @@ La compilación de un programa se realiza con `west build -b <board-name> exampl
 Para pasar el binario a la memoria de la placa se ejecuta el comando `west flash`.
 Es necesario que la compilación se realice dentro del directorio `zephyr/`.
 
-> En algunos ejemplos se utiliza impresión por el puerto serie de la placa (dispositivo _/dev/ttyACM0_ al conectar por USB). Para poder visualizar la información, se puede utilizar un terminal gráfico como CuteCom. Se puede instalar facilmente en Ubuntu con `apt-get install cutecom`.
+> En algunos ejemplos se utiliza impresión por el puerto serie de la placa (dispositivo _/dev/ttyACM0_ al conectar por USB). Para poder visualizar la información, se puede utilizar un terminal gráfico como CuteCom. Se puede instalar fácilmente en Ubuntu con `apt-get install cutecom`.
 
 ### Blinky Sample
 
@@ -97,7 +97,7 @@ La aplicación implementa un servidor UDP/TCP que complementa la aplicación de 
 west build -p auto -b stm32f769i_disco samples/net/sockets/echo_server/ -- -DCONF_FILE="prj.conf overlay-log.conf"
 ```
 
-> Para enviar tráfico al servidor (la placa), podemos utilizar un generador de paquetes tipo Package Sender (`apt-get install packetsender`), o a traves de la shell del tipo bash de Linux:
+> Para enviar tráfico al servidor (la placa), podemos utilizar un generador de paquetes tipo Package Sender (`apt-get install packetsender`), o a través de la Shell del tipo bash de Linux:
 
 ```bash
 echo "This is my TCP message" > /dev/tcp/192.0.2.1/4242
@@ -119,24 +119,25 @@ En una terminal de Linux, ejecutaremos el broker de MQTT _mosquitto_ (se puede i
 mosquitto -v
 ```
 
-> En el caso de que muestre un mensaje de error, porque el puerto ya esta en uso, es necesario matar al demonio de _mosquitto_ ya ejecutandose en el sistema, para liberar el puerto por defecto. (`kill -9 <PID>`)
+> En el caso de que muestre un mensaje de error, porque el puerto ya está en uso, es necesario matar al demonio de _mosquitto_ ya ejecutándose en el sistema, para liberar el puerto por defecto. (`kill -9 <PID>`)
 
 ## 5. Prueba básica con la plataforma ThingsBoard
 
-Para comprobar el funcionamiento de la plataforma ThingsBoard,vamos a enviar desde un PC con un cliente MQTT, datos a un panel de ThingsBoard.
+Para comprobar el funcionamiento de la plataforma ThingsBoard, vamos a enviar desde un PC con un cliente MQTT, datos a un panel de ThingsBoard.
 
-Se han seguído los primeros pasos de la [guia de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux), ya que la plataforma permite habilitar muchas más carácterisiticas, como la gestíon de usuarios o alarmas, que no van a ser necesarias para está práctica. Solo realizaremos los pasos necesarios para configurar el dispositivo y la creación de un Dashboard, para visualizar gráficas en tiempo real de los datos enviados desde la placa STM32F769.
+Se han seguido los primeros pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux), ya que la plataforma permite habilitar muchas más características, como la gestión de usuarios o alarmas, que no van a ser necesarias para esta práctica. Solo realizaremos los pasos necesarios para configurar el dispositivo y la creación de un Dashboard, para visualizar gráficas en tiempo real de los datos enviados desde la placa STM32F769.
 
-Para esta prueba se utilzará la versión [Live Demo](https://demo.thingsboard.io), ya que no necesita de ninguna instalación en nuestro equipo. Alternativamente se puede instalar una versión en local según se índica en la documentación oficial.
+Para esta prueba se utilizará la versión [Live Demo](https://demo.thingsboard.io), ya que no necesita de ninguna instalación en nuestro equipo. Alternativamente se puede instalar una versión en local según se indica en la documentación oficial.
 
 > [Documentación oficial de ThingsBoard Community Edition](https://thingsboard.io/docs/) -
 > [Repositorio oficial](https://github.com/thingsboard/thingsboard)
 
 ### Paso 1: Creación de un dispositivo
 
-Se siguen los pasos de la [guia de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux), para crear un dispositivo.
+Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux), para crear un dispositivo.
 
-> Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositvo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/stm32f769_profile.json) proporcionado. Este perfil límita a que la comunicación se realice mediante el protocolo MQTT.
+> Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositivo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/stm32f769_profile.json) proporcionado. Este perfil limita a que la comunicación se realice mediante el protocolo MQTT.
+
 
 ### Paso 2: Conexión del dispositivo mediante MQTT (simulado desde un PC)
 
@@ -148,9 +149,9 @@ sudo apt-get install mosquitto-clients
 
 Para mandar una medición a ThingsBoard, se realiza creando una publicación en el canal `v1/devices/me/telemetry`.
 
-> En esta prueba el `$THINGSBOARD_HOST_NAME` es la dirección de la versión Live Demo: _demo.thingsboard.io_, en el caso de una instalación local: _localhost_, y el `$ACCESS_TOKEN` es el token copiado del dispositivo.
+> En esta prueba el `$THINGSBOARD_HOST_NAME` es la dirección de la versión Live Demo: _demo.thingsboard.io_, en el caso de una instalación local: _localhost_, y el `$ACCESS_TOKEN` es el token copiado del dispositivo en el paso anterior.
 
-Primeros creamos una publicación en el TOPIC de `temperature` con un valor de 25:
+Primero creamos una publicación en el TOPIC de `temperature` con un valor de 25:
 
 ```bash
  mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN " -m {"temperature":25}
@@ -164,8 +165,9 @@ Ahora creamos una publicación en el TOPIC de `humidity` con un valor de 50:
 
 ### Paso 3: Creación de un Dashboard
 
-Se siguen los pasos de la [guia de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux) para crear un Dashboard. Se crea el alias de entidad necesario para el dispositivo, y se crea un Dashboard con una gráfica de temperatura y humedad.
+Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux) para crear un Dashboard. Se crea el alias de entidad necesario para el dispositivo, y se crea un Dashboard con una gráfica de temperatura y humedad.
 
-> Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/stm32f769_dashboard.json) ya creado, el cual se puede importar facilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
+> Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/stm32f769_dashboard.json) ya creado, el cual se puede importar fácilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
 
-Con la configuración por defecto podemos ver que el panel muestra las gráfica de temperatura y humedad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.
+Con la configuración por defecto podemos ver que el panel muestra las gráficas de temperatura y humedad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.
+
