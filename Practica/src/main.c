@@ -1,20 +1,20 @@
+// Zephyr API
 #include <zephyr.h>
 #include <device.h>
 #include <drivers/gpio.h>
+
+//Standard C + POSIX API
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <pthread.h>
-#include <unistd.h>
+#include <posix/pthread.h>
 
+//Modules
 #include "leds.h"
+#include "light_sensor.h"
 
-void light_sensor(void)
-{
-	printf("Light sensor thread started\n");
-}
-
+//Threads stacks declaration
 #define STACKSIZE 1024
 #define NUM_THREADS 2
 K_THREAD_STACK_ARRAY_DEFINE(stacks, NUM_THREADS, STACKSIZE);
@@ -22,7 +22,7 @@ K_THREAD_STACK_ARRAY_DEFINE(stacks, NUM_THREADS, STACKSIZE);
 /**
  * 
  */
-void main(void)
+int main(void)
 {
 	printf("Starting ... \n");
 
@@ -57,7 +57,7 @@ void main(void)
 		exit(1);
 	}
 
-	// Set the priority of thread 1 to min_prio+5
+	// Set the priority of thread 1 to min_prio+1
 	sch_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + 1);
 	if (pthread_attr_setschedparam(&attr, &sch_param) != 0) {
 		printf("Error en atributo schedparam\n");

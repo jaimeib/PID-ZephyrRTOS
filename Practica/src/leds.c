@@ -1,3 +1,11 @@
+//Zephyr API
+#include <zephyr.h>
+#include <device.h>
+#include <drivers/gpio.h>
+
+//Standard C API
+#include <stdio.h>
+
 #include "leds.h"
 
 void blink(const struct led *led, uint32_t sleep_ms, uint32_t id)
@@ -35,6 +43,8 @@ void blink(const struct led *led, uint32_t sleep_ms, uint32_t id)
 
 void blink_red(void)
 {
+	printf("Red LED thread started\n");
+
 	//Blinks led0
 	blink(&led0, RED_LED_PERIOD_MS, 0);
 }
