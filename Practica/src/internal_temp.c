@@ -10,23 +10,25 @@
 #include <stm32f7xx_hal.h>
 #include <stm32f7xx_hal_adc.h>
 
-#include "light_sensor.h"
+#include "internal_temp.h"
 
 void SystemClock_Config(void)
 {
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Habilita el reloj ADC1
 }
 
-void ADC_Select_CH0(void)
+void ADC_Select_CHTemp(void)
 {
 	ADC_ChannelConfTypeDef sConfig = { 0 };
-	/** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-	sConfig.Channel = ADC_CHANNEL_6;
+
+	/* Configure ADC Temperature Sensor Channel */
+	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
 	sConfig.Rank = 1;
 	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
 	sConfig.Offset = 0;
+
 	if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK) {
+		/* Channel Configuration Error */
 		Error_Handler();
 	}
 }
@@ -77,39 +79,36 @@ static void Error_Handler(void)
 	}
 }
 
-void light_sensor(void)
+void internal_temp(void)
 {
-	printf("Light sensor thread started\n");
+	printf("Internal temperture thread started\n");
 
 	/* Variable used to get converted value */
-	__IO int32_t ConvertedLight = 0;
+	__IO int32_t ConvertedValue = 0;
+	int32_t JTemp = 0x0;
 
 	SystemClock_Config();
 
-	/*##-2- Configure the ADC peripheral*/
+	/*##-2- Configure the ADC peripheral #########################################*/
 	ADC_Config();
-
-	// Hal API
-	GPIO_InitTypeDef GPIO_InitStruct;
-
-	// Pin A0 is in PA6, so we need to set it up!
-	GPIO_InitStruct.Pin = GPIO_PIN_6;
-	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	/* Infinite loop */
 	while (1) {
 		/* Insert a delay define on TEMP_REFRESH_PERIOD */
-		HAL_Delay(LIGHT_REFRESH_PERIOD);
+		HAL_Delay(TEMP_REFRESH_PERIOD);
 
-		// Select ADC_CH0
-		ADC_Select_CH0();
+		// Select ADC_CHTemp
+		ADC_Select_CHTemp();
 		HAL_ADC_Start(&AdcHandle);
 		HAL_ADC_PollForConversion(&AdcHandle, 1000);
-		ConvertedLight = HAL_ADC_GetValue(&AdcHandle);
+		ConvertedValue = HAL_ADC_GetValue(&AdcHandle);
 		HAL_ADC_Stop(&AdcHandle);
 
-		printf("Raw light: %d\n", ConvertedLight);
+		/* Compute the Junction Temperature value */
+		JTemp = ((((ConvertedValue * VREF) / MAX_CONVERTED_VALUE) - VSENS_AT_AMBIENT_TEMP) *
+			 10 / AVG_SLOPE) +
+			AMBIENT_TEMP;
+
+		printf("Internal Temperature is %d degrees \n", JTemp);
 	}
 }

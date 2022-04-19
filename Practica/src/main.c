@@ -13,10 +13,11 @@
 //Modules
 #include "leds.h"
 #include "light_sensor.h"
+#include "internal_temp.h"
 
 //Threads stacks declaration
 #define STACKSIZE 1024
-#define NUM_THREADS 2
+#define NUM_THREADS 3
 K_THREAD_STACK_ARRAY_DEFINE(stacks, NUM_THREADS, STACKSIZE);
 
 /**
@@ -27,7 +28,7 @@ int main(void)
 	printf("Starting ... \n");
 
 	//Threads variables:
-	pthread_t green_led_thread, light_sensor_thread;
+	pthread_t green_led_thread, light_sensor_thread, internal_temp_thread;
 	struct sched_param sch_param;
 	pthread_attr_t attr;
 
@@ -73,12 +74,35 @@ int main(void)
 		exit(1);
 	}
 
+	// Set the priority of thread 1 to min_prio+10
+	sch_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + 10);
+	if (pthread_attr_setschedparam(&attr, &sch_param) != 0) {
+		printf("Error en atributo schedparam\n");
+		exit(1);
+	}
+
 	//Set the stack for light sensor thread
 	pthread_attr_setstack(&attr, &stacks[1][0], STACKSIZE);
 
 	// Creating thread that measures light intensity
 	if (pthread_create(&light_sensor_thread, &attr, (void *)light_sensor, NULL) != 0) {
 		printf("Error: failed to create light sensor thread\n");
+		exit(1);
+	}
+
+	// Set the priority of thread 1 to min_prio+5
+	sch_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + 5);
+	if (pthread_attr_setschedparam(&attr, &sch_param) != 0) {
+		printf("Error en atributo schedparam\n");
+		exit(1);
+	}
+
+	//Set the stack for light sensor thread
+	pthread_attr_setstack(&attr, &stacks[2][0], STACKSIZE);
+
+	// Creating thread that measures light intensity
+	if (pthread_create(&internal_temp_thread, &attr, (void *)internal_temp, NULL) != 0) {
+		printf("Error: failed to create internal temperature thread\n");
 		exit(1);
 	}
 }
