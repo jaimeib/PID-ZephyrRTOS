@@ -3,13 +3,16 @@
 #include <device.h>
 #include <drivers/gpio.h>
 
-//Standard C API
+//Standard C + POSIX API
 #include <stdio.h>
+#include <posix/pthread.h>
 
 // Hal API
 #include <stm32f7xx_hal.h>
 #include <stm32f7xx_hal_adc.h>
 
+//Modules
+#include "main.h"
 #include "light_sensor.h"
 
 void SystemClock_Config(void)
@@ -77,12 +80,17 @@ static void Error_Handler(void)
 	}
 }
 
-void light_sensor(void)
+void light_sensor(void *ptr_result)
 {
+	extern pthread_mutex_t mutex_result;
+	extern pthread_cond_t cond_supervisor;
+	extern bool new_result;
+
 	printf("Light sensor thread started\n");
 
 	/* Variable used to get converted value */
-	__IO int32_t ConvertedLight = 0;
+	__IO int32_t converted_light = 0;
+	int light_normalized = 0;
 
 	SystemClock_Config();
 
@@ -98,18 +106,33 @@ void light_sensor(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-	/* Infinite loop */
-	while (1) {
-		/* Insert a delay define on TEMP_REFRESH_PERIOD */
+	// Infinite loop
+	while (true) {
+		/* Insert a delay define on LIGHT_REFRESH_PERIOD */
 		HAL_Delay(LIGHT_REFRESH_PERIOD);
 
 		// Select ADC_CH0
 		ADC_Select_CH0();
 		HAL_ADC_Start(&AdcHandle);
 		HAL_ADC_PollForConversion(&AdcHandle, 1000);
-		ConvertedLight = HAL_ADC_GetValue(&AdcHandle);
+		converted_light = HAL_ADC_GetValue(&AdcHandle);
 		HAL_ADC_Stop(&AdcHandle);
 
-		printf("Raw light: %d\n", ConvertedLight);
+		// Normalize the light value
+		light_normalized = converted_light * MAX_LIGHT_VALUE / MAX_CONVERTED_VALUE;
+
+		// Print the light value
+		printf("Light percentage: %d \n", light_normalized);
+
+		// Send the light value to the supervisor thread
+		pthread_mutex_lock(&mutex_result);
+		((thread_result_t *)ptr_result)->type = LIGHT;
+		((thread_result_t *)ptr_result)->value = light_normalized;
+
+		// Notify the supervisor thread
+		pthread_cond_signal(&cond_supervisor);
+		new_result = true;
+
+		pthread_mutex_unlock(&mutex_result);
 	}
 }

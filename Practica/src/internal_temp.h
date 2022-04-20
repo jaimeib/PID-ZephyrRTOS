@@ -1,4 +1,4 @@
-#define TEMP_REFRESH_PERIOD 10000 /* Internal temperature refresh period */
+#define TEMP_REFRESH_PERIOD 500 /* Internal temperature refresh period */
 #define MAX_CONVERTED_VALUE 4095 /* Max converted value */
 #define AMBIENT_TEMP 25 /* Ambient Temperature */
 #define VSENS_AT_AMBIENT_TEMP 760 /* VSENSE value (mv) at ambient temperature */
@@ -15,4 +15,4 @@ static void SystemClock_Config(void);
 static void ADC_Select_CHTemp(void);
 
 //Internal Temperature FUNCTIONS:
-void internal_temp(void);
+void internal_temp(void *ptr_result);

@@ -3,13 +3,16 @@
 #include <device.h>
 #include <drivers/gpio.h>
 
-//Standard C API
+//Standard C + POSIX API
 #include <stdio.h>
+#include <posix/pthread.h>
 
 // Hal API
 #include <stm32f7xx_hal.h>
 #include <stm32f7xx_hal_adc.h>
 
+//Modules
+#include "main.h"
 #include "internal_temp.h"
 
 void SystemClock_Config(void)
@@ -79,8 +82,12 @@ static void Error_Handler(void)
 	}
 }
 
-void internal_temp(void)
+void internal_temp(void *ptr_result)
 {
+	extern pthread_mutex_t mutex_result;
+	extern pthread_cond_t cond_supervisor;
+	extern bool new_result;
+
 	printf("Internal temperture thread started\n");
 
 	/* Variable used to get converted value */
@@ -89,11 +96,11 @@ void internal_temp(void)
 
 	SystemClock_Config();
 
-	/*##-2- Configure the ADC peripheral #########################################*/
+	/* Configure the ADC peripheral */
 	ADC_Config();
 
-	/* Infinite loop */
-	while (1) {
+	// Infinite loop
+	while (true) {
 		/* Insert a delay define on TEMP_REFRESH_PERIOD */
 		HAL_Delay(TEMP_REFRESH_PERIOD);
 
@@ -104,11 +111,23 @@ void internal_temp(void)
 		ConvertedValue = HAL_ADC_GetValue(&AdcHandle);
 		HAL_ADC_Stop(&AdcHandle);
 
-		/* Compute the Junction Temperature value */
+		// Compute the Junction Temperature value in degreeC
 		JTemp = ((((ConvertedValue * VREF) / MAX_CONVERTED_VALUE) - VSENS_AT_AMBIENT_TEMP) *
 			 10 / AVG_SLOPE) +
 			AMBIENT_TEMP;
 
+		// Print the value
 		printf("Internal Temperature is %d degrees \n", JTemp);
+
+		// Send the temperature to the supervisor thread
+		pthread_mutex_lock(&mutex_result);
+		((thread_result_t *)ptr_result)->type = INTERNAL_TEMPERATURE;
+		((thread_result_t *)ptr_result)->value = JTemp;
+
+		// Notify the supervisor thread
+		pthread_cond_signal(&cond_supervisor);
+		new_result = true;
+
+		pthread_mutex_unlock(&mutex_result);
 	}
 }

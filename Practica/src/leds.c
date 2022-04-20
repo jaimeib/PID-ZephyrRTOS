@@ -6,6 +6,7 @@
 //Standard C API
 #include <stdio.h>
 
+//Modules
 #include "leds.h"
 
 void blink(const struct led *led, uint32_t sleep_ms, uint32_t id)
@@ -26,7 +27,8 @@ void blink(const struct led *led, uint32_t sleep_ms, uint32_t id)
 		return;
 	}
 
-	while (1) {
+	// Infinite loop
+	while (true) {
 		//Switch led:
 		gpio_pin_set(spec->port, spec->pin, status % 2);
 
