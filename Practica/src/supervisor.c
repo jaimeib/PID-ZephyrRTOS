@@ -10,6 +10,7 @@
 //Modules
 #include "main.h"
 #include "supervisor.h"
+#include "leds.h"
 
 //Supervisor FUNCTIONS:
 void supervisor(void *ptr_result)
@@ -41,13 +42,25 @@ void supervisor(void *ptr_result)
 		// Unlock the mutex
 		pthread_mutex_unlock(&mutex_result);
 
+		//Turns on/off leds depending on the results value of each sensor:
 		switch (last_result.type) {
 		case LIGHT:
-			printf("SUPERVISOR: Light sensor last value: %d\n", last_result.value);
+			if (last_result.value <= LOW_LIGHT_VALUE) {
+				// Turn on the Green LED 1
+				turn_led(GREEN1, 1);
+			} else {
+				// Turn off the Green LED 1
+				turn_led(GREEN1, 0);
+			}
 			break;
 		case INTERNAL_TEMPERATURE:
-			printf("SUPERVISOR: Internal temperature last value: %d\n",
-			       last_result.value);
+			if (last_result.value >= HIGH_TEMP_VALUE) {
+				// Turn on the Green LED 2
+				turn_led(GREEN2, 1);
+			} else {
+				// Turn off the Green LED 2
+				turn_led(GREEN2, 0);
+			}
 			break;
 		default:
 			printf("SUPERVISOR: Unknown sensor type\n");

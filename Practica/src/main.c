@@ -119,6 +119,7 @@ int main(void)
 	}
 
 	//PUBLISHER THREAD:
+
 	// Set the priority of sMQTT publisher thread to min_prio+9
 	sch_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + 9);
 	if (pthread_attr_setschedparam(&attr, &sch_param) != 0) {
@@ -135,21 +136,21 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	//GREEN LED THREAD:
+	//LED THREAD:
 
-	// Set the priority of Green LED thread to min_prio+8
+	// Set the priority of LED thread to min_prio+8
 	sch_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + 8);
 	if (pthread_attr_setschedparam(&attr, &sch_param) != 0) {
-		printf("Error in atribute schedparam of Green LED thread\n");
+		printf("Error in atribute schedparam of LED thread\n");
 		exit(EXIT_FAILURE);
 	}
 
-	//Set the stack for Green LED thread
+	//Set the stack for LED thread
 	pthread_attr_setstack(&attr, &stacks[2][0], STACKSIZE);
 
-	// Creating thread that blinks Green LED
-	if (pthread_create(&green_led_thread, &attr, (void *)blink_green, NULL) != 0) {
-		printf("Error: failed to create Green LED thread\n");
+	// Creating thread that blinks LED
+	if (pthread_create(&green_led_thread, &attr, (void *)blink_led, (void *)RED1) != 0) {
+		printf("Error: failed to create LED thread\n");
 		exit(EXIT_FAILURE);
 	}
 
