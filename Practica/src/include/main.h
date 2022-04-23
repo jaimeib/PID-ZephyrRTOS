@@ -1,3 +1,5 @@
+/* MAIN CONFIGURATION*/
+
 typedef enum { LIGHT, INTERNAL_TEMPERATURE } sensor_type_t;
 
 typedef struct {

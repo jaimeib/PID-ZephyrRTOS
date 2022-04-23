@@ -1,3 +1,5 @@
+/* LIGHT SENSOR CONFIGURATION*/
+
 #define LIGHT_REFRESH_PERIOD 100 /* Light Sensor refresh period */
 #define MAX_CONVERTED_VALUE 4095 /* Max converted value */
 #define MAX_LIGHT_VALUE 100 /* Max light value */

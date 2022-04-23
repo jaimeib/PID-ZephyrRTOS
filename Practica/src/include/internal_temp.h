@@ -1,3 +1,5 @@
+/* INTERNAL TEMPERATURE SENSOR CONFIGURATION*/
+
 #define TEMP_REFRESH_PERIOD 500 /* Internal temperature refresh period */
 #define MAX_CONVERTED_VALUE 4095 /* Max converted value */
 #define AMBIENT_TEMP 25 /* Ambient Temperature */

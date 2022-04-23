@@ -1,6 +1,6 @@
-typedef enum { RED1, GREEN1, GREEN2 } led_number_t;
+/* LEDS CONFIGURATION*/
 
-//LEDS GENERAL CONFIGURATION:
+typedef enum { RED1, GREEN1, GREEN2 } led_number_t;
 
 #define BLINK_LED_PERIOD_MS 1000
 

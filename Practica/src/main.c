@@ -16,7 +16,7 @@
 #include "light_sensor.h"
 #include "internal_temp.h"
 #include "supervisor.h"
-#include "MQTT_publisher.h"
+#include "mqtt_publisher.h"
 
 //Threads stacks declaration
 #define STACKSIZE 1024
@@ -131,7 +131,7 @@ int main(void)
 	pthread_attr_setstack(&attr, &stacks[1][0], STACKSIZE);
 
 	// Creating thread that publish the measures using MQTT
-	if (pthread_create(&publisher_thread, &attr, (void *)publish, last_result) != 0) {
+	if (pthread_create(&publisher_thread, &attr, (void *)mqtt_publisher, last_result) != 0) {
 		printf("Error: failed to create the MQTT publisher thread\n");
 		exit(EXIT_FAILURE);
 	}
