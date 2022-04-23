@@ -78,12 +78,12 @@ void mqtt_evt_handler(struct mqtt_client *const client, const struct mqtt_evt *e
 		}
 
 		connected = true;
-		LOG_INF("MQTT client connected!");
+		printf("MQTT client connected!");
 
 		break;
 
 	case MQTT_EVT_DISCONNECT:
-		LOG_INF("MQTT client disconnected %d", evt->result);
+		printf("MQTT client disconnected %d", evt->result);
 
 		connected = false;
 		clear_fds();
@@ -96,7 +96,7 @@ void mqtt_evt_handler(struct mqtt_client *const client, const struct mqtt_evt *e
 			break;
 		}
 
-		LOG_INF("PUBACK packet id: %u", evt->param.puback.message_id);
+		printf("PUBACK packet id: %u", evt->param.puback.message_id);
 
 		break;
 
@@ -106,7 +106,7 @@ void mqtt_evt_handler(struct mqtt_client *const client, const struct mqtt_evt *e
 			break;
 		}
 
-		LOG_INF("PUBREC packet id: %u", evt->param.pubrec.message_id);
+		printf("PUBREC packet id: %u", evt->param.pubrec.message_id);
 
 		const struct mqtt_pubrel_param rel_param = { .message_id =
 								     evt->param.pubrec.message_id };
@@ -124,12 +124,12 @@ void mqtt_evt_handler(struct mqtt_client *const client, const struct mqtt_evt *e
 			break;
 		}
 
-		LOG_INF("PUBCOMP packet id: %u", evt->param.pubcomp.message_id);
+		printf("PUBCOMP packet id: %u", evt->param.pubcomp.message_id);
 
 		break;
 
 	case MQTT_EVT_PINGRESP:
-		LOG_INF("PINGRESP packet");
+		printf("PINGRESP packet");
 		break;
 
 	default:
@@ -137,16 +137,39 @@ void mqtt_evt_handler(struct mqtt_client *const client, const struct mqtt_evt *e
 	}
 }
 
-static int publish(struct mqtt_client *client, enum mqtt_qos qos)
+static char *get_mqtt_topic(void)
 {
-	char payload[] = "Hello World!";
-	char topic[] = "metacard_esp32";
+	return MQTT_TOPIC;
+}
+
+static char *get_mqtt_payload(void *ptr_result, enum mqtt_qos qos)
+{
+	static char payload[30];
+
+	switch (((thread_result_t *)ptr_result)->type) {
+	case LIGHT:
+		snprintk(payload, sizeof(payload), "{light:%d}",
+			 ((thread_result_t *)ptr_result)->value);
+		break;
+	case INTERNAL_TEMPERATURE:
+		snprintk(payload, sizeof(payload), "{temperature:%d}",
+			 ((thread_result_t *)ptr_result)->value);
+		break;
+	default:
+		break;
+	}
+
+	return payload;
+}
+
+static int publish(struct mqtt_client *client, void *ptr_result, enum mqtt_qos qos)
+{
 	struct mqtt_publish_param param;
 
 	param.message.topic.qos = qos;
-	param.message.topic.topic.utf8 = topic;
+	param.message.topic.topic.utf8 = (uint8_t *)get_mqtt_topic();
 	param.message.topic.topic.size = strlen(param.message.topic.topic.utf8);
-	param.message.payload.data = payload;
+	param.message.payload.data = get_mqtt_payload(&ptr_result, qos);
 	param.message.payload.len = strlen(param.message.payload.data);
 	param.message_id = sys_rand32_get();
 	param.dup_flag = 0U;
@@ -157,14 +180,14 @@ static int publish(struct mqtt_client *client, enum mqtt_qos qos)
 
 #define RC_STR(rc) ((rc) == 0 ? "OK" : "ERROR")
 
-#define PRINT_RESULT(func, rc) LOG_INF("%s: %d <%s>", (func), rc, RC_STR(rc))
+#define PRINT_RESULT(func, rc) printf("%s: %d <%s>", (func), rc, RC_STR(rc))
 
 static void broker_init(void)
 {
 	struct sockaddr_in *broker4 = (struct sockaddr_in *)&broker;
 
 	broker4->sin_family = AF_INET;
-	broker4->sin_port = htons(SERVER_PORT);
+	broker4->sin_port = htons(MQTT_SERVER_PORT);
 
 	net_ipaddr_copy(&broker4->sin_addr, &net_sin(haddr->ai_addr)->sin_addr);
 }
@@ -281,13 +304,13 @@ static int get_mqtt_broker_addrinfo(void)
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_protocol = 0;
 
-		rc = zsock_getaddrinfo(SERVER_HOSTNAME, "8883", &hints, &haddr);
+		rc = zsock_getaddrinfo(MQTT_SERVER_HOST, "8883", &hints, &haddr);
 		if (rc == 0) {
-			LOG_INF("DNS resolved for %s:%d", SERVER_HOSTNAME, SERVER_PORT);
+			printf("DNS resolved for %s:%d", MQTT_SERVER_HOST, MQTT_SERVER_PORT);
 			return 0;
 		}
 
-		LOG_ERR("DNS not resolved for %s:%d, retrying", SERVER_HOSTNAME, SERVER_PORT);
+		LOG_ERR("DNS not resolved for %s:%d, retrying", MQTT_SERVER_HOST, MQTT_SERVER_PORT);
 	}
 
 	return rc;
@@ -295,6 +318,16 @@ static int get_mqtt_broker_addrinfo(void)
 
 int mqtt_publisher(void *ptr_result)
 {
+	//Sincronization variables for the result:
+	extern pthread_mutex_t mutex_result;
+	extern pthread_cond_t cond_result;
+	extern bool new_result;
+
+	//Sincronization variables for the publisher is ready:
+	extern pthread_mutex_t mutex_publisher_ready;
+	extern pthread_cond_t cond_publisher_ready;
+	extern bool publisher_ready;
+
 	printf("mqtt publisher thread started\n");
 	int r = 0;
 
@@ -302,10 +335,18 @@ int mqtt_publisher(void *ptr_result)
 	PRINT_RESULT("get_mqtt_broker_addrinfo", r);
 	SUCCESS_OR_EXIT(r);
 
-	LOG_INF("attempting to connect: ");
+	printf("attempting to connect: ");
 	r = try_to_connect(&client_ctx);
 	PRINT_RESULT("try_to_connect", r);
 	SUCCESS_OR_EXIT(r);
+
+	printf("connected\n");
+
+	//Signal the main thread that we are connected (ready)
+	pthread_mutex_lock(&mutex_publisher_ready);
+	publisher_ready = true;
+	pthread_cond_signal(&cond_publisher_ready);
+	pthread_mutex_unlock(&mutex_publisher_ready);
 
 	while (connected) {
 		r = mqtt_ping(&client_ctx);
@@ -315,7 +356,7 @@ int mqtt_publisher(void *ptr_result)
 		r = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
 		SUCCESS_OR_BREAK(r);
 
-		r = publish(&client_ctx, MQTT_QOS_0_AT_MOST_ONCE);
+		r = publish(&client_ctx, &ptr_result, MQTT_QOS_0_AT_MOST_ONCE);
 		PRINT_RESULT("mqtt_publish", r);
 		SUCCESS_OR_BREAK(r);
 	}
@@ -323,7 +364,7 @@ int mqtt_publisher(void *ptr_result)
 	r = mqtt_disconnect(&client_ctx);
 	PRINT_RESULT("mqtt_disconnect", r);
 
-	LOG_INF("Bye!");
+	printf("Bye!");
 
 	return r;
 }

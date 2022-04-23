@@ -29,8 +29,18 @@ K_THREAD_STACK_ARRAY_DEFINE(stacks, NUM_THREADS, STACKSIZE);
 pthread_mutex_t mutex_result;
 
 //Condition variable to signal the supervisor thread
-pthread_cond_t cond_supervisor;
+pthread_cond_t cond_result;
 bool new_result;
+
+//Condition variable to signal main thread when the supervisor thread is ready
+pthread_mutex_t mutex_supervisor_ready;
+pthread_cond_t cond_supervisor_ready;
+bool supervisor_ready;
+
+//Condition variable to signal main thread when the mqtt publisher thread is ready
+pthread_mutex_t mutex_publisher_ready;
+pthread_cond_t cond_publisher_ready;
+bool publisher_ready;
 
 /**
  * 
@@ -54,9 +64,21 @@ int main(void)
 	// Create the mutex attributes object
 	pthread_mutexattr_init(&mutexattr);
 
-	// Create the mutex
+	// Create the mutex for the result
 	if (pthread_mutex_init(&mutex_result, &mutexattr) != 0) {
 		printf("Result mutex created\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Create the mutex for the sincronization when supervisor thread is ready
+	if (pthread_mutex_init(&mutex_supervisor_ready, &mutexattr) != 0) {
+		printf("Supervisor mutex created\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Create the mutex for the sincronization when publisher thread is ready
+	if (pthread_mutex_init(&mutex_publisher_ready, &mutexattr) != 0) {
+		printf("Publisher mutex created\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -66,9 +88,21 @@ int main(void)
 	// Create the condition variable attributes object
 	pthread_condattr_init(&condattr);
 
-	// Create the condition variable to signal the supervisor thread
-	if (pthread_cond_init(&cond_supervisor, &condattr) != 0) {
+	// Create the condition variable to signal the supervisor & publisher thread
+	if (pthread_cond_init(&cond_result, &condattr) != 0) {
 		printf("Condition variable to signal the supervisor thread created\n");
+		exit(EXIT_FAILURE);
+	}
+
+	//Create the condition variable for the sincronization when supervisor thread is ready
+	if (pthread_cond_init(&cond_supervisor_ready, &condattr) != 0) {
+		printf("Supervisor condition variable created\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Create the condition variable for the sincronization when publisher thread is ready
+	if (pthread_cond_init(&cond_publisher_ready, &condattr) != 0) {
+		printf("Publisher condition variable created\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -118,6 +152,17 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
+	//WAIT FOR MQTT SUPERVISOR THREAD TO BE READY BEFORE CREATING THE OTHER THREADS:
+	pthread_mutex_lock(&mutex_supervisor_ready);
+	while (true) {
+		if (!supervisor_ready) {
+			pthread_cond_wait(&cond_supervisor_ready, &mutex_supervisor_ready);
+		} else {
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutex_supervisor_ready);
+
 	//PUBLISHER THREAD:
 
 	// Set the priority of sMQTT publisher thread to min_prio+9
@@ -135,6 +180,17 @@ int main(void)
 		printf("Error: failed to create the MQTT publisher thread\n");
 		exit(EXIT_FAILURE);
 	}
+
+	//WAIT FOR MQTT PUBLISHER THREAD TO BE READY BEFORE CREATING THE OTHER THREADS:
+	pthread_mutex_lock(&mutex_publisher_ready);
+	while (true) {
+		if (!publisher_ready) {
+			pthread_cond_wait(&cond_publisher_ready, &mutex_publisher_ready);
+		} else {
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutex_publisher_ready);
 
 	//LED THREAD:
 

@@ -138,7 +138,6 @@ Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/
 
 > Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositivo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/stm32f769_profile.json) proporcionado. Este perfil limita a que la comunicación se realice mediante el protocolo MQTT.
 
-
 ### Paso 2: Conexión del dispositivo mediante MQTT (simulado desde un PC)
 
 Lo primero a realizar será instalar los clientes de _mosquitto_ en nuestra maquina Ubuntu:
@@ -147,17 +146,17 @@ Lo primero a realizar será instalar los clientes de _mosquitto_ en nuestra maqu
 sudo apt-get install mosquitto-clients
 ```
 
-Para mandar una medición a ThingsBoard, se crea una publicación en el canal `v1/devices/me/telemetry`.
+Para mandar una medición a ThingsBoard, se crea una publicación en el topic `v1/devices/me/telemetry`.
 
 > En esta prueba el `$THINGSBOARD_HOST_NAME` es la dirección de la versión Live Demo: _demo.thingsboard.io_, en el caso de una instalación local: _localhost_, y el `$ACCESS_TOKEN` es el token copiado del dispositivo en el paso anterior.
 
-Primero creamos una publicación en el TOPIC de `temperature` con un valor de 25:
+Primero creamos una publicación de temperatura con un valor de 25:
 
 ```bash
  mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN " -m {"temperature":25}
 ```
 
-Ahora creamos una publicación en el TOPIC de `humidity` con un valor de 50:
+Ahora creamos una publicación de humedad con un valor de 50:
 
 ```bash
  mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN " -m {"humidity":50}

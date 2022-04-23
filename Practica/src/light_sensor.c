@@ -83,7 +83,7 @@ static void Error_Handler(void)
 void light_sensor(void *ptr_result)
 {
 	extern pthread_mutex_t mutex_result;
-	extern pthread_cond_t cond_supervisor;
+	extern pthread_cond_t cond_result;
 	extern bool new_result;
 
 	printf("Light sensor thread started\n");
@@ -130,9 +130,8 @@ void light_sensor(void *ptr_result)
 		((thread_result_t *)ptr_result)->value = light_normalized;
 
 		// Notify the supervisor thread
-		pthread_cond_signal(&cond_supervisor);
 		new_result = true;
-
+		pthread_cond_broadcast(&cond_result);
 		pthread_mutex_unlock(&mutex_result);
 	}
 }

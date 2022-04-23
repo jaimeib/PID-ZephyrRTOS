@@ -15,14 +15,25 @@
 //Supervisor FUNCTIONS:
 void supervisor(void *ptr_result)
 {
-	//Sincronization variables:
+	//Sincronization variables for the result:
 	extern pthread_mutex_t mutex_result;
-	extern pthread_cond_t cond_supervisor;
+	extern pthread_cond_t cond_result;
 	extern bool new_result;
+
+	//Sincronization variables for the supervisor is ready:
+	extern pthread_mutex_t mutex_supervisor_ready;
+	extern pthread_cond_t cond_supervisor_ready;
+	extern bool supervisor_ready;
 
 	printf("Supervisor thread started\n");
 
 	thread_result_t last_result;
+
+	//Signal the main thread that the supervisor thread is ready
+	pthread_mutex_lock(&mutex_supervisor_ready);
+	supervisor_ready = true;
+	pthread_cond_signal(&cond_supervisor_ready);
+	pthread_mutex_unlock(&mutex_supervisor_ready);
 
 	// Infinite loop
 	while (true) {
@@ -31,7 +42,7 @@ void supervisor(void *ptr_result)
 
 		// Wait for the signal from the sensor thread
 		while (!new_result) {
-			pthread_cond_wait(&cond_supervisor, &mutex_result);
+			pthread_cond_wait(&cond_result, &mutex_result);
 		}
 
 		// Copy the result
