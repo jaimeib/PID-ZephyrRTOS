@@ -34,6 +34,7 @@ void supervisor(void *ptr_result)
 	supervisor_ready = true;
 	pthread_cond_signal(&cond_supervisor_ready);
 	pthread_mutex_unlock(&mutex_supervisor_ready);
+	printf("Supervisor thread is ready\n");
 
 	// Infinite loop
 	while (true) {

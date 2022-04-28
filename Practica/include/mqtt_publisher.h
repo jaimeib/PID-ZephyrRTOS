@@ -8,10 +8,6 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define MQTT_SERVER_HOST "demo.thingsboard.io"
-#define MQTT_SERVER_PORT 1883
-#define MQTT_TOPIC "v1/devices/me/telemetry"
-
 #define APP_CONNECT_TIMEOUT_MS 2000
 #define APP_SLEEP_MSECS 500
 
@@ -23,5 +19,9 @@
 
 #endif
 
+//Connection parameters:
+#define MQTT_SERVER_ADDRESS "192.0.2.2"
+#define MQTT_SERVER_PORT 1883
+#define MQTT_TOPIC "v1/devices/me/telemetry"
 // FUNCTIONS:
 int mqtt_publisher(void *ptr_result);

@@ -19,9 +19,6 @@
 #include <logging/log.h>
 LOG_MODULE_REGISTER(net_mqtt_publisher_sample, LOG_LEVEL_DBG);
 
-static struct zsock_addrinfo hints;
-static struct zsock_addrinfo *haddr;
-
 /* Buffers for MQTT client. */
 static uint8_t rx_buffer[APP_MQTT_BUFFER_SIZE];
 static uint8_t tx_buffer[APP_MQTT_BUFFER_SIZE];
@@ -189,7 +186,7 @@ static void broker_init(void)
 	broker4->sin_family = AF_INET;
 	broker4->sin_port = htons(MQTT_SERVER_PORT);
 
-	net_ipaddr_copy(&broker4->sin_addr, &net_sin(haddr->ai_addr)->sin_addr);
+	zsock_inet_pton(AF_INET, MQTT_SERVER_ADDRESS, &broker4->sin_addr);
 }
 
 static void client_init(struct mqtt_client *client)
@@ -294,28 +291,6 @@ static int process_mqtt_and_sleep(struct mqtt_client *client, int timeout)
 		}                                                                                  \
 	}
 
-static int get_mqtt_broker_addrinfo(void)
-{
-	int retries = 3;
-	int rc = -EINVAL;
-
-	while (retries--) {
-		hints.ai_family = AF_INET;
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_protocol = 0;
-
-		rc = zsock_getaddrinfo(MQTT_SERVER_HOST, "8883", &hints, &haddr);
-		if (rc == 0) {
-			printf("DNS resolved for %s:%d", MQTT_SERVER_HOST, MQTT_SERVER_PORT);
-			return 0;
-		}
-
-		LOG_ERR("DNS not resolved for %s:%d, retrying", MQTT_SERVER_HOST, MQTT_SERVER_PORT);
-	}
-
-	return rc;
-}
-
 int mqtt_publisher(void *ptr_result)
 {
 	//Sincronization variables for the result:
@@ -328,25 +303,23 @@ int mqtt_publisher(void *ptr_result)
 	extern pthread_cond_t cond_publisher_ready;
 	extern bool publisher_ready;
 
-	printf("mqtt publisher thread started\n");
+	printf("MQTT publisher thread started\n");
 	int r = 0;
 
-	r = get_mqtt_broker_addrinfo();
-	PRINT_RESULT("get_mqtt_broker_addrinfo", r);
-	SUCCESS_OR_EXIT(r);
-
+	//Try to connect to the client:
 	printf("attempting to connect: ");
 	r = try_to_connect(&client_ctx);
 	PRINT_RESULT("try_to_connect", r);
 	SUCCESS_OR_EXIT(r);
 
-	printf("connected\n");
+	printf("MQTT publisher connected\n");
 
 	//Signal the main thread that we are connected (ready)
 	pthread_mutex_lock(&mutex_publisher_ready);
 	publisher_ready = true;
 	pthread_cond_signal(&cond_publisher_ready);
 	pthread_mutex_unlock(&mutex_publisher_ready);
+	printf("MQTT publisher thread is ready\n");
 
 	while (connected) {
 		r = mqtt_ping(&client_ctx);

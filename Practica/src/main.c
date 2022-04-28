@@ -19,8 +19,7 @@
 #include "mqtt_publisher.h"
 
 //Threads stacks declaration
-#define STACKSIZE 1024
-#define NUM_THREADS 5
+
 K_THREAD_STACK_ARRAY_DEFINE(stacks, NUM_THREADS, STACKSIZE);
 
 //Global variables

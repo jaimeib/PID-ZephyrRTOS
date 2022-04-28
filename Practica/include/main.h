@@ -6,3 +6,7 @@ typedef struct {
 	sensor_type_t type;
 	int value;
 } thread_result_t;
+
+//THREADS CONFIGURATION:
+#define STACKSIZE 2048
+#define NUM_THREADS 5
