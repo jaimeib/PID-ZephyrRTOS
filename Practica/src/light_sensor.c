@@ -84,7 +84,8 @@ void light_sensor(void *ptr_result)
 {
 	extern pthread_mutex_t mutex_result;
 	extern pthread_cond_t cond_result;
-	extern bool new_result;
+	extern bool new_result_for_supervisor;
+	extern bool new_result_for_publisher;
 
 	printf("Light sensor thread started\n");
 
@@ -129,8 +130,9 @@ void light_sensor(void *ptr_result)
 		((thread_result_t *)ptr_result)->type = LIGHT;
 		((thread_result_t *)ptr_result)->value = light_normalized;
 
-		// Notify the supervisor thread
-		new_result = true;
+		// Notify the supervisor & publisher threads
+		new_result_for_supervisor = true;
+		new_result_for_publisher = true;
 		pthread_cond_broadcast(&cond_result);
 		pthread_mutex_unlock(&mutex_result);
 	}

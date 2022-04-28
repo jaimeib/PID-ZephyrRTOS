@@ -86,7 +86,8 @@ void internal_temp(void *ptr_result)
 {
 	extern pthread_mutex_t mutex_result;
 	extern pthread_cond_t cond_result;
-	extern bool new_result;
+	extern bool new_result_for_supervisor;
+	extern bool new_result_for_publisher;
 
 	printf("Internal temperture thread started\n");
 
@@ -124,8 +125,9 @@ void internal_temp(void *ptr_result)
 		((thread_result_t *)ptr_result)->type = INTERNAL_TEMPERATURE;
 		((thread_result_t *)ptr_result)->value = JTemp;
 
-		// Notify the supervisor thread
-		new_result = true;
+		// Notify the supervisor & publisher threads
+		new_result_for_supervisor = true;
+		new_result_for_publisher = true;
 		pthread_cond_broadcast(&cond_result);
 		pthread_mutex_unlock(&mutex_result);
 	}

@@ -136,7 +136,7 @@ Para esta prueba se utilizará la versión [Live Demo](https://demo.thingsboard.
 
 Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux), para crear un dispositivo.
 
-> Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositivo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/stm32f769_profile.json) proporcionado. Este perfil limita a que la comunicación se realice mediante el protocolo MQTT.
+> Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositivo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/Plantillas/stm32f769_profile.json) proporcionado. Este perfil limita a que la comunicación se realice mediante el protocolo MQTT.
 
 ### Paso 2: Conexión del dispositivo mediante MQTT (simulado desde un PC)
 
@@ -150,22 +150,22 @@ Para mandar una medición a ThingsBoard, se crea una publicación en el topic `v
 
 > En esta prueba el `$THINGSBOARD_HOST_NAME` es la dirección de la versión Live Demo: _demo.thingsboard.io_, en el caso de una instalación local: _localhost_, y el `$ACCESS_TOKEN` es el token copiado del dispositivo en el paso anterior.
 
-Primero creamos una publicación de temperatura con un valor de 25:
+Primero creamos una publicación del sensor de temperatura interna con un valor de 25:
 
 ```bash
  mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN " -m {"temperature":25}
 ```
 
-Ahora creamos una publicación de humedad con un valor de 50:
+Ahora creamos una publicación del sensor de luz con un valor de 50:
 
 ```bash
- mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN " -m {"humidity":50}
+ mosquitto_pub -d -q 1 -h "$THINGSBOARD_HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN " -m {"light":50}
 ```
 
 ### Paso 3: Creación de un Dashboard
 
-Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux) para crear un Dashboard. Se crea el alias de entidad necesario para el dispositivo, y se crea un Dashboard con una gráfica de temperatura y humedad.
+Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux) para crear un Dashboard. Se crea el alias de entidad necesario para el dispositivo, y se crea un Dashboard con una gráfica de temperatura y luminosidad.
 
-> Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/stm32f769_dashboard.json) ya creado, el cual se puede importar fácilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
+> Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/Plantillas/stm32f769_dashboard.json) ya creado, el cual se puede importar fácilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
 
-Con la configuración por defecto podemos ver que el panel muestra las gráficas de temperatura y humedad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.
+Con la configuración por defecto podemos ver que el panel muestra las gráficas de temperatura y luminosidad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.

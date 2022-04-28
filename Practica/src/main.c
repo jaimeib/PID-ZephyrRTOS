@@ -29,7 +29,8 @@ pthread_mutex_t mutex_result;
 
 //Condition variable to signal the supervisor thread
 pthread_cond_t cond_result;
-bool new_result;
+bool new_result_for_supervisor;
+bool new_result_for_publisher;
 
 //Condition variable to signal main thread when the supervisor thread is ready
 pthread_mutex_t mutex_supervisor_ready;
@@ -151,17 +152,6 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	//WAIT FOR MQTT SUPERVISOR THREAD TO BE READY BEFORE CREATING THE OTHER THREADS:
-	pthread_mutex_lock(&mutex_supervisor_ready);
-	while (true) {
-		if (!supervisor_ready) {
-			pthread_cond_wait(&cond_supervisor_ready, &mutex_supervisor_ready);
-		} else {
-			break;
-		}
-	}
-	pthread_mutex_unlock(&mutex_supervisor_ready);
-
 	//PUBLISHER THREAD:
 
 	// Set the priority of sMQTT publisher thread to min_prio+9
@@ -179,6 +169,17 @@ int main(void)
 		printf("Error: failed to create the MQTT publisher thread\n");
 		exit(EXIT_FAILURE);
 	}
+
+	//WAIT FOR MQTT SUPERVISOR THREAD TO BE READY BEFORE CREATING THE OTHER THREADS:
+	pthread_mutex_lock(&mutex_supervisor_ready);
+	while (true) {
+		if (!supervisor_ready) {
+			pthread_cond_wait(&cond_supervisor_ready, &mutex_supervisor_ready);
+		} else {
+			break;
+		}
+	}
+	pthread_mutex_unlock(&mutex_supervisor_ready);
 
 	//WAIT FOR MQTT PUBLISHER THREAD TO BE READY BEFORE CREATING THE OTHER THREADS:
 	pthread_mutex_lock(&mutex_publisher_ready);

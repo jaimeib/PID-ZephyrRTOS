@@ -139,34 +139,37 @@ static char *get_mqtt_topic(void)
 	return MQTT_TOPIC;
 }
 
-static char *get_mqtt_payload(void *ptr_result, enum mqtt_qos qos)
+static char *get_mqtt_payload(thread_result_t *ptr_result, enum mqtt_qos qos)
 {
 	static char payload[30];
+	thread_result_t data;
 
-	switch (((thread_result_t *)ptr_result)->type) {
+	data.type = ptr_result->type;
+	data.value = ptr_result->value;
+
+	switch (data.type) {
 	case LIGHT:
-		snprintk(payload, sizeof(payload), "{light:%d}",
-			 ((thread_result_t *)ptr_result)->value);
+		snprintk(payload, sizeof(payload), "{light:%d}", data.value);
 		break;
 	case INTERNAL_TEMPERATURE:
-		snprintk(payload, sizeof(payload), "{temperature:%d}",
-			 ((thread_result_t *)ptr_result)->value);
+		snprintk(payload, sizeof(payload), "{temperature:%d}", data.value);
 		break;
 	default:
 		break;
 	}
 
+	printf("MQTT Payload: %s\n", payload);
 	return payload;
 }
 
-static int publish(struct mqtt_client *client, void *ptr_result, enum mqtt_qos qos)
+static int publish(struct mqtt_client *client, thread_result_t *ptr_result, enum mqtt_qos qos)
 {
 	struct mqtt_publish_param param;
 
 	param.message.topic.qos = qos;
 	param.message.topic.topic.utf8 = (uint8_t *)get_mqtt_topic();
 	param.message.topic.topic.size = strlen(param.message.topic.topic.utf8);
-	param.message.payload.data = get_mqtt_payload(&ptr_result, qos);
+	param.message.payload.data = get_mqtt_payload(ptr_result, qos);
 	param.message.payload.len = strlen(param.message.payload.data);
 	param.message_id = sys_rand32_get();
 	param.dup_flag = 0U;
@@ -177,7 +180,7 @@ static int publish(struct mqtt_client *client, void *ptr_result, enum mqtt_qos q
 
 #define RC_STR(rc) ((rc) == 0 ? "OK" : "ERROR")
 
-#define PRINT_RESULT(func, rc) printf("%s: %d <%s>", (func), rc, RC_STR(rc))
+#define PRINT_RESULT(func, rc) printf("%s: %d <%s>\n", (func), rc, RC_STR(rc))
 
 static void broker_init(void)
 {
@@ -245,6 +248,7 @@ static int try_to_connect(struct mqtt_client *client)
 	return -EINVAL;
 }
 
+/*
 static int process_mqtt_and_sleep(struct mqtt_client *client, int timeout)
 {
 	int64_t remaining = timeout;
@@ -277,6 +281,7 @@ static int process_mqtt_and_sleep(struct mqtt_client *client, int timeout)
 
 	return 0;
 }
+*/
 
 #define SUCCESS_OR_EXIT(rc)                                                                        \
 	{                                                                                          \
@@ -296,12 +301,14 @@ int mqtt_publisher(void *ptr_result)
 	//Sincronization variables for the result:
 	extern pthread_mutex_t mutex_result;
 	extern pthread_cond_t cond_result;
-	extern bool new_result;
+	extern bool new_result_for_publisher;
 
 	//Sincronization variables for the publisher is ready:
 	extern pthread_mutex_t mutex_publisher_ready;
 	extern pthread_cond_t cond_publisher_ready;
 	extern bool publisher_ready;
+
+	thread_result_t last_result;
 
 	printf("MQTT publisher thread started\n");
 	int r = 0;
@@ -312,8 +319,6 @@ int mqtt_publisher(void *ptr_result)
 	PRINT_RESULT("try_to_connect", r);
 	SUCCESS_OR_EXIT(r);
 
-	printf("MQTT publisher connected\n");
-
 	//Signal the main thread that we are connected (ready)
 	pthread_mutex_lock(&mutex_publisher_ready);
 	publisher_ready = true;
@@ -322,22 +327,30 @@ int mqtt_publisher(void *ptr_result)
 	printf("MQTT publisher thread is ready\n");
 
 	while (connected) {
-		r = mqtt_ping(&client_ctx);
-		PRINT_RESULT("mqtt_ping", r);
-		SUCCESS_OR_BREAK(r);
+		// Wait for a new result
+		pthread_mutex_lock(&mutex_result);
 
-		r = process_mqtt_and_sleep(&client_ctx, APP_SLEEP_MSECS);
-		SUCCESS_OR_BREAK(r);
+		// Wait for the signal from the sensor thread
+		while (!new_result_for_publisher) {
+			pthread_cond_wait(&cond_result, &mutex_result);
+		}
 
-		r = publish(&client_ctx, &ptr_result, MQTT_QOS_0_AT_MOST_ONCE);
+		// Copy the result
+		last_result.type = ((thread_result_t *)ptr_result)->type;
+		last_result.value = ((thread_result_t *)ptr_result)->value;
+		new_result_for_publisher = false;
+
+		// Unlock the mutex
+		pthread_mutex_unlock(&mutex_result);
+
+		//Publish the message:
+		r = publish(&client_ctx, &last_result, MQTT_QOS_0_AT_MOST_ONCE);
 		PRINT_RESULT("mqtt_publish", r);
 		SUCCESS_OR_BREAK(r);
 	}
 
 	r = mqtt_disconnect(&client_ctx);
 	PRINT_RESULT("mqtt_disconnect", r);
-
-	printf("Bye!");
 
 	return r;
 }

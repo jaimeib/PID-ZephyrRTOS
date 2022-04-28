@@ -32,7 +32,7 @@ Hay que tener en cuenta la que el stack de los threads debe ser de al menos 2048
 
 ### Prerequisitos:
 
--   Es necesario tener instalado [Docker CE](https://docs.docker.com/engine/install/) en su equipo.
+-   Es necesario tener instalado y configurado [Docker CE](https://docs.docker.com/engine/install/) en su equipo.
 -   Es necesario tener instalado [Docker Compose](https://docs.docker.com/compose/install/) en su equipo.
 
 ### Instalación:
@@ -43,27 +43,7 @@ En este caso, nos basta con lanzar un servidor que utilice PostgreSQL como base 
 
 Create docker compose file for ThingsBoard queue service:
 
-```bash
-nano docker-compose.yml
-```
-
-```bash
-version: '2.2'
-services:
-  mytb:
-    restart: always
-    image: "thingsboard/tb-postgres"
-    ports:
-      - "8080:9090"
-      - "1883:1883"
-      - "7070:7070"
-      - "5683-5688:5683-5688/udp"
-    environment:
-      TB_QUEUE_TYPE: in-memory
-    volumes:
-      - ~/.mytb-data:/data
-      - ~/.mytb-logs:/var/log/thingsboard
-```
+[Fichero de configuración del contenedor Docker](ThingsBoard/Docker/docker-compose.yml)
 
 ```bash
 mkdir -p ~/.mytb-data && sudo chown -R 799:799 ~/.mytb-data

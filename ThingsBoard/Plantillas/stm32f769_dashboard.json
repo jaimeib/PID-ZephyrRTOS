@@ -84,9 +84,9 @@
                   "postFuncBody": null
                 },
                 {
-                  "name": "humidity",
+                  "name": "light",
                   "type": "timeseries",
-                  "label": "Humidity",
+                  "label": "Light",
                   "color": "#4caf50",
                   "settings": {
                     "columnWidth": "0px",
@@ -97,7 +97,7 @@
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
-                  "_hash": 0.550628724862188,
+                  "_hash": 0.8495300918405552,
                   "units": null,
                   "decimals": null,
                   "funcBody": null,
@@ -228,7 +228,7 @@
             },
             "customLegendEnabled": false
           },
-          "title": "Temperature",
+          "title": "Internal Temperature Sensor",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -278,10 +278,10 @@
               "filterId": null,
               "dataKeys": [
                 {
-                  "name": "humidity",
+                  "name": "light",
                   "type": "timeseries",
-                  "label": "Humidity",
-                  "color": "#1cba32",
+                  "label": "Light",
+                  "color": "#f3cc21",
                   "settings": {
                     "excludeFromStacking": false,
                     "hideDataByDefault": false,
@@ -305,7 +305,7 @@
                       "showValuesForComparison": true
                     }
                   },
-                  "_hash": 0.8264625825579043,
+                  "_hash": 0.9903173889567707,
                   "units": null,
                   "decimals": null,
                   "funcBody": null,
@@ -358,7 +358,7 @@
             },
             "customLegendEnabled": false
           },
-          "title": "Humidity",
+          "title": "Light Sensor",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -408,12 +408,12 @@
               "filterId": null,
               "dataKeys": [
                 {
-                  "name": "humidity",
+                  "name": "light",
                   "type": "timeseries",
-                  "label": "Humidity",
-                  "color": "#2196f3",
+                  "label": "Light",
+                  "color": "#f3c321",
                   "settings": {},
-                  "_hash": 0.5554703802967373,
+                  "_hash": 0.7286942284881484,
                   "units": null,
                   "decimals": null,
                   "funcBody": null,
@@ -479,7 +479,7 @@
             "animationDuration": 500,
             "animationRule": "linear"
           },
-          "title": "Humidity",
+          "title": "Light Sensor",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -655,7 +655,7 @@
             "colorBarProgressEnd": "#f44336",
             "colorBarStroke": "#b0bec5"
           },
-          "title": "Temperature",
+          "title": "Internal Temperature Sensor",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -685,34 +685,34 @@
           "main": {
             "widgets": {
               "3aad9516-5712-15e6-87a8-c9d7974b02df": {
-                "sizeX": 8,
-                "sizeY": 4,
+                "sizeX": 6,
+                "sizeY": 11,
                 "row": 0,
                 "col": 0
               },
               "d11ed6d3-3ffa-e739-e179-de61abf0a944": {
-                "sizeX": 16,
-                "sizeY": 5,
+                "sizeX": 13,
+                "sizeY": 6,
                 "row": 0,
-                "col": 8
+                "col": 11
               },
               "4334545a-b7e7-7946-ca4e-d4414a762913": {
-                "sizeX": 16,
+                "sizeX": 13,
                 "sizeY": 5,
-                "row": 5,
-                "col": 8
+                "row": 6,
+                "col": 11
               },
               "daf7376f-ef96-9711-5c68-cb610e66facd": {
-                "sizeX": 4,
-                "sizeY": 6,
-                "row": 4,
-                "col": 4
+                "sizeX": 5,
+                "sizeY": 5,
+                "row": 6,
+                "col": 6
               },
               "16263dcf-a171-8fdc-2957-01b8fe74d572": {
-                "sizeX": 4,
+                "sizeX": 5,
                 "sizeY": 6,
-                "row": 4,
-                "col": 0
+                "row": 0,
+                "col": 6
               }
             },
             "gridSettings": {
@@ -738,7 +738,7 @@
           "resolveMultiple": false,
           "singleEntity": {
             "entityType": "DEVICE",
-            "id": "56ad1be0-ba9d-11ec-942a-51543ec1dbaf"
+            "id": "7e288da0-c72f-11ec-85a7-33310feeaa55"
           }
         }
       }

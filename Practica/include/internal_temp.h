@@ -1,6 +1,6 @@
 /* INTERNAL TEMPERATURE SENSOR CONFIGURATION*/
 
-#define TEMP_REFRESH_PERIOD 500 /* Internal temperature refresh period */
+#define TEMP_REFRESH_PERIOD 2000 /* Internal temperature refresh period */
 #define MAX_CONVERTED_VALUE 4095 /* Max converted value */
 #define AMBIENT_TEMP 25 /* Ambient Temperature */
 #define VSENS_AT_AMBIENT_TEMP 760 /* VSENSE value (mv) at ambient temperature */
