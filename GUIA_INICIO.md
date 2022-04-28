@@ -136,7 +136,7 @@ Para esta prueba se utilizará la versión [Live Demo](https://demo.thingsboard.
 
 Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux), para crear un dispositivo.
 
-> Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositivo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/Plantillas/stm32f769_profile.json) proporcionado. Este perfil limita a que la comunicación se realice mediante el protocolo MQTT.
+> Antes de crear el dispositivo se recomienda importar en el área de **Perfiles de dispositivo** de la aplicación, el [perfil de dispositivo para STM32F769](ThingsBoard/Plantillas/stm32f769_profile.json) proporcionado. Este perfil limita a que la comunicación se realice mediante el protocolo MQTT, y establece el nombre del TOPIC a usar para la comunicación, así como el Payload en formato JSON `{"type":value}`.
 
 ### Paso 2: Conexión del dispositivo mediante MQTT (simulado desde un PC)
 
