@@ -4,7 +4,7 @@
 
 Zephyr se ha instalado correctamente en Ubuntu 20.04 LTS siguiendo las indicaciones de la documentación oficial, para la versión sobre el entorno virtual en Python, que es la recomendada en la propia documentación.
 
-> [Documentación oficial del sistema operativo Zephyr Project de Linux Fundation](https://docs.zephyrproject.org/latest/index.html) -
+> [Documentación oficial del sistema operativo Zephyr Project de Linux Foundation](https://docs.zephyrproject.org/latest/index.html) -
 > [Repositorio oficial](https://github.com/zephyrproject-rtos/zephyr)
 
 ## 2. Prueba básica con la placa STM32F769 Discovery Kit
