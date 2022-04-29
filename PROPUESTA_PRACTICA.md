@@ -2,13 +2,11 @@
 
 ## Introducción
 
-[Soporte de POSIX en Zephyr RTOS](https://docs.zephyrproject.org/latest/services/portability/posix.html)
-
 ## Descripción de los threads:
 
 ### - Thread LED:
 
-Este thread se encarga de encender y apagar el LED 1 de usuario de la placa, cada segundo.
+Este thread se encarga de encender y apagar el LED 1 (color rojo) de usuario de la placa, cada segundo.
 
 ### - Thread sensor de luz:
 
@@ -20,15 +18,23 @@ Este thread se encarga de leer el valor del sensor de temperatura interno de la 
 
 ### - Thread supervisor:
 
-Este thread se encarga de obtener las lecturas de threads de los sensores
+Este thread se encarga de obtener las lecturas de threads de los sensores, y en función de unos valores umbrales definidos, encender o apagar los LED de control (LEDs 2 y 3 de usuario de color verde).
 
 ### - Thread de publicación MQTT:
 
-Este thread se encarga de publicar los datos de los sensores, utilizando el protocolo MQTT.
+Este thread se encarga de publicar los datos de los sensores, utilizando el protocolo MQTT. Dicho thread deberá configurar y establecer la conexión con el broker MQTT y el cliente.
 
 ## Configuración de los threads:
 
-Hay que tener en cuenta la que el stack de los threads debe ser de al menos 2048 bytes, ya que con un valor multiplo de 512 bytes menor, se produce un error de stack overflow en el thread de publicación.
+Hay que tener en cuenta la que el stack de los threads debe ser de al menos 2048 bytes, ya que con un valor potencia de 2 y múltiplo de 512 bytes menor, se produce un error de stack overflow en el thread de publicación.
+
+## Sincronización de los threads:
+
+-   Los threads de LED, sensor de luz y sensor de temperatura interno deben iniciarse una vez los threads de publicación MQTT y supervisor estén esperando resultados, para no perder medidas.
+
+-   Los threads que manejan los sensores deben sincronizarse para escribir los resultados en la estructura definida del tipo `thread_result_t`. Esta estructura tiene 2 campos: `type` para indicar el tipo de sensor que escribe la medida, representado por un tipo enumerado, y `value` para escribir el dato. Se avisan al thread supervisor y al thread de publicación, al mismo tiempo, que se han escrito los datos, para que los procesen.
+
+-   Los threads supervisor y publicación MQTT deben leer los campos de la estructura en exclusión mutua, para evitar que algún dato se cambie mientras se lee. Cuando se leen los valores, se copian en una estructura privada del thread, con la cual ya operar sin que tengan acceso el resto de threads.
 
 ## Estructura del proyecto:
 
@@ -52,6 +58,14 @@ Practica
     ├── mqtt_publisher.c
     └── supervisor.c
 ```
+
+## Soporte POSIX en Zephyr RTOS:
+
+[Soporte de POSIX en Zephyr RTOS](https://docs.zephyrproject.org/latest/services/portability/posix.html)
+
+### Incompatibilidades del estándar POSIX:
+
+No hay soporte compatible para la función pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED) a la hora de definir la planificación de los threads.
 
 ## Plataforma ThingsBoard usando Docker en Linux:
 
@@ -82,6 +96,12 @@ Por último, lanzamos el contenedor de Docker, desde el directorio de este el fi
 ```bash
 docker compose pull
 docker compose up
+```
+
+Para parar el contenedor, ejecutamos:
+
+```bash
+docker compose down
 ```
 
 ### Configuración de ThingsBoard:
