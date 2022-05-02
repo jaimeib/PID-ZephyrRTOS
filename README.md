@@ -4,4 +4,4 @@
 
 > _Implantación de plataforma docente para sistemas empotrados y tecnologías industria 4.0_
 
-## Características del estándar POSIX que aún no son compatibles con Zephyr RTOS:
+## Características del estándar POSIX que aún no son compatibles:
