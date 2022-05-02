@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <posix/pthread.h>
 
 //Modules
@@ -19,7 +18,6 @@
 #include "mqtt_publisher.h"
 
 //Threads stacks declaration
-
 K_THREAD_STACK_ARRAY_DEFINE(stacks, NUM_THREADS, STACKSIZE);
 
 //Global variables
@@ -120,6 +118,15 @@ int main(void)
 		printf("Error while initializing attributes\n");
 		exit(EXIT_FAILURE);
 	}
+
+	/*FIXME: #1 NO POSIX SUPPORT IN ZEPHYR
+	// Never forget the inheritsched attribute
+	// Otherwise the scheduling attributes are not used
+	if (pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED) != 0) {
+		printf("Error in inheritsched attribute\n");
+		exit(1);
+	}
+	*/
 
 	// Thread is created dettached
 	if (pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED) != 0) {

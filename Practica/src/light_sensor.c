@@ -3,8 +3,10 @@
 #include <device.h>
 #include <drivers/gpio.h>
 
-//Standard C + POSIX API
+// Standard C + POSIX API
 #include <stdio.h>
+#include <posix/time.h>
+#include <posix/unistd.h>
 #include <posix/pthread.h>
 
 // Hal API
@@ -23,7 +25,7 @@ void SystemClock_Config(void)
 void ADC_Select_CH0(void)
 {
 	ADC_ChannelConfTypeDef sConfig = { 0 };
-	/** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+	/* Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
 	sConfig.Channel = ADC_CHANNEL_6;
 	sConfig.Rank = 1;
@@ -75,7 +77,10 @@ static void ADC_Config(void)
 static void Error_Handler(void)
 {
 	while (1) {
+		//Print error message
 		printf("Error...");
+
+		// Sleep 20 ms
 		HAL_Delay(20);
 	}
 }
@@ -109,9 +114,6 @@ void light_sensor(void *ptr_result)
 
 	// Infinite loop
 	while (true) {
-		/* Insert a delay define on LIGHT_REFRESH_PERIOD */
-		HAL_Delay(LIGHT_REFRESH_PERIOD);
-
 		// Select ADC_CH0
 		ADC_Select_CH0();
 		HAL_ADC_Start(&AdcHandle);
@@ -135,5 +137,8 @@ void light_sensor(void *ptr_result)
 		new_result_for_publisher = true;
 		pthread_cond_broadcast(&cond_result);
 		pthread_mutex_unlock(&mutex_result);
+
+		//Wait for period (next activation):
+		k_msleep(LIGHT_SENSOR_PERIOD_MS);
 	}
 }

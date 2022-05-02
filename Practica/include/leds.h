@@ -2,6 +2,7 @@
 
 typedef enum { RED1, GREEN1, GREEN2 } led_number_t;
 
+//Blinking led period
 #define BLINK_LED_PERIOD_MS 1000
 
 #define LED0 DT_ALIAS(led0)
@@ -23,26 +24,14 @@ typedef enum { RED1, GREEN1, GREEN2 } led_number_t;
 struct led {
 	struct gpio_dt_spec spec;
 	const char *gpio_pin_name;
-};
-
-static const struct led led0 = {
-	.spec = GPIO_DT_SPEC_GET_OR(LED0, gpios, { 0 }),
-	.gpio_pin_name = DT_PROP_OR(LED0, label, "RED1"),
-};
-
-static const struct led led1 = {
-	.spec = GPIO_DT_SPEC_GET_OR(LED1, gpios, { 0 }),
-	.gpio_pin_name = DT_PROP_OR(LED1, label, "GREEN1"),
-};
-
-static const struct led led2 = {
-	.spec = GPIO_DT_SPEC_GET_OR(LED2, gpios, { 0 }),
-	.gpio_pin_name = DT_PROP_OR(LED2, label, "GREEN2"),
+	int state;
 };
 
 //LED FUNCTIONS:
-void blink_function(const struct led *led, uint32_t sleep_ms);
-void turn_function(const struct led *led, int status);
+void blink_function(struct led *led, uint32_t sleep_ms);
+void turn_function(struct led *led, int status);
 
 void blink_led(led_number_t led_to_blink);
 void turn_led(led_number_t led_to_turn, int status);
+
+struct led *select_led(led_number_t led_name);

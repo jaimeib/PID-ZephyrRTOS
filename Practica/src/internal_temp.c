@@ -3,8 +3,10 @@
 #include <device.h>
 #include <drivers/gpio.h>
 
-//Standard C + POSIX API
+// Standard C + POSIX API
 #include <stdio.h>
+#include <posix/time.h>
+#include <posix/unistd.h>
 #include <posix/pthread.h>
 
 // Hal API
@@ -17,7 +19,7 @@
 
 void SystemClock_Config(void)
 {
-	__HAL_RCC_ADC1_CLK_ENABLE(); // Habilita el reloj ADC1
+	__HAL_RCC_ADC1_CLK_ENABLE();
 }
 
 void ADC_Select_CHTemp(void)
@@ -78,6 +80,8 @@ static void Error_Handler(void)
 {
 	while (1) {
 		printf("Error...");
+
+		//Sleep 20 ms
 		HAL_Delay(20);
 	}
 }
@@ -89,12 +93,13 @@ void internal_temp(void *ptr_result)
 	extern bool new_result_for_supervisor;
 	extern bool new_result_for_publisher;
 
-	printf("Internal temperture thread started\n");
+	printf("Internal temperature thread started\n");
 
 	/* Variable used to get converted value */
 	__IO int32_t ConvertedValue = 0;
 	int32_t JTemp = 0x0;
 
+	// Habilitar el reloj ADC1
 	SystemClock_Config();
 
 	/* Configure the ADC peripheral */
@@ -102,9 +107,6 @@ void internal_temp(void *ptr_result)
 
 	// Infinite loop
 	while (true) {
-		/* Insert a delay define on TEMP_REFRESH_PERIOD */
-		HAL_Delay(TEMP_REFRESH_PERIOD);
-
 		// Select ADC_CHTemp
 		ADC_Select_CHTemp();
 		HAL_ADC_Start(&AdcHandle);
@@ -130,5 +132,8 @@ void internal_temp(void *ptr_result)
 		new_result_for_publisher = true;
 		pthread_cond_broadcast(&cond_result);
 		pthread_mutex_unlock(&mutex_result);
+
+		//Wait for period (next activation):
+		k_msleep(INTERNAL_TEMP_SENSOR_PERIOD_MS);
 	}
 }
