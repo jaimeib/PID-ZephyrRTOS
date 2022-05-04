@@ -61,11 +61,21 @@ Practica
 
 ## Soporte POSIX en Zephyr RTOS:
 
-[Soporte de POSIX en Zephyr RTOS](https://docs.zephyrproject.org/latest/services/portability/posix.html)
+> [Soporte de POSIX en Zephyr RTOS](https://docs.zephyrproject.org/latest/services/portability/posix.html)
 
-### Incompatibilidades del estándar POSIX:
+### Características del estándar POSIX que aún no son compatibles:
 
-No hay soporte compatible para la función pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED) a la hora de definir la planificación de los threads.
+-   `pthread_attr_setinheritsched` & `PTHREAD_EXPLICIT_SCHED` para la planificación de hilos (por defecto, la planificación es implicita).
+
+    > GitHub Issue [#4](https://github.com/jaimeib/Practica-PID-ZephyrRTOS/issues/4)
+
+-   `usleep` para la espera de microsegundos. La llamada de esta función no está implementada como en el estandar POSIX. Hace uso de internamente de la llamada `k_msleep` de la API de Threads de Kernel suministrada por Zephyr.
+
+    > GitHub Issue [#5](https://github.com/jaimeib/Practica-PID-ZephyrRTOS/issues/5)
+
+-   `clock_nanosleep` para realizar esperas absolutas a partir de un clock (CLOCK_MONOTONIC). Si hay funciones para leer los valores de los clocks, pero no para realizar las esperas. Hay llamadas similares pero no siguen el mismo estándar.
+
+    > GitHub Issue [#6](https://github.com/jaimeib/Practica-PID-ZephyrRTOS/issues/6)
 
 ## Plataforma ThingsBoard usando Docker en Linux:
 
