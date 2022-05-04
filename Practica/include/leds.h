@@ -3,7 +3,7 @@
 typedef enum { RED1, GREEN1, GREEN2 } led_number_t;
 
 //Blinking led period
-#define BLINK_LED_PERIOD_MS 1000
+struct timespec blinking_led_period = { .tv_sec = 1, .tv_nsec = 0 };
 
 #define LED0 DT_ALIAS(led0)
 #define LED1 DT_ALIAS(led1)
@@ -28,7 +28,7 @@ struct led {
 };
 
 //LED FUNCTIONS:
-void blink_function(struct led *led, uint32_t sleep_ms);
+void blink_function(struct led *led, struct timespec period);
 void turn_function(struct led *led, int status);
 
 void blink_led(led_number_t led_to_blink);

@@ -16,6 +16,7 @@
 //Modules
 #include "main.h"
 #include "light_sensor.h"
+#include "timespec_operations.h"
 
 void SystemClock_Config(void)
 {
@@ -80,8 +81,10 @@ static void Error_Handler(void)
 		//Print error message
 		printf("Error...");
 
-		// Sleep 20 ms
-		HAL_Delay(20);
+		//Sleep 20 ms
+
+		//FIXME: #5 No POSIX support on Zephyr for usleep
+		usleep(20000);
 	}
 }
 
@@ -91,6 +94,8 @@ void light_sensor(void *ptr_result)
 	extern pthread_cond_t cond_result;
 	extern bool new_result_for_supervisor;
 	extern bool new_result_for_publisher;
+
+	int rc;
 
 	printf("Light sensor thread started\n");
 
@@ -111,6 +116,10 @@ void light_sensor(void *ptr_result)
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
 	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	//Read initial time:
+	struct timespec initial_ts;
+	clock_gettime(CLOCK_MONOTONIC, &initial_ts);
 
 	// Infinite loop
 	while (true) {
@@ -139,6 +148,13 @@ void light_sensor(void *ptr_result)
 		pthread_mutex_unlock(&mutex_result);
 
 		//Wait for period (next activation):
-		k_msleep(LIGHT_SENSOR_PERIOD_MS);
+		incr_timespec(&initial_ts, &light_sensor_period);
+
+		//FIXME: #6 No POSIX support on Zephyr for clock_nanosleep
+		if ((rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &initial_ts, NULL)) !=
+		    0) {
+			printf("Error in clock_nanosleep: %d\n", rc);
+			pthread_exit(NULL);
+		}
 	}
 }

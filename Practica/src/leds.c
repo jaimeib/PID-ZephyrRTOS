@@ -11,6 +11,7 @@
 
 // Modules
 #include "leds.h"
+#include "timespec_operations.h"
 
 static struct led led0 = {
 	.spec = GPIO_DT_SPEC_GET_OR(LED0, gpios, { 0 }),
@@ -57,7 +58,7 @@ struct led *select_led(led_number_t led_name)
 	return led;
 }
 
-void blink_function(struct led *led, uint32_t sleep_ms)
+void blink_function(struct led *led, struct timespec period)
 {
 	const struct gpio_dt_spec *spec = &led->spec;
 	int status = 0;
@@ -77,6 +78,10 @@ void blink_function(struct led *led, uint32_t sleep_ms)
 		return;
 	}
 
+	//Read initial time:
+	struct timespec initial_ts;
+	clock_gettime(CLOCK_MONOTONIC, &initial_ts);
+
 	// Infinite loop
 	while (true) {
 		//Switch led:
@@ -91,7 +96,13 @@ void blink_function(struct led *led, uint32_t sleep_ms)
 		status++;
 
 		//Wait for period (next activation):
-		k_msleep(sleep_ms);
+		incr_timespec(&initial_ts, &period);
+		//FIXME: #6 No POSIX support on Zephyr for clock_nanosleep
+		if ((rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &initial_ts, NULL)) !=
+		    0) {
+			printf("Error in clock_nanosleep: %d\n", rc);
+			pthread_exit(NULL);
+		}
 	}
 }
 
@@ -137,7 +148,7 @@ void blink_led(led_number_t led_to_blink)
 	struct led *led_selected = select_led(led_to_blink);
 
 	//Blink the led
-	blink_function(led_selected, BLINK_LED_PERIOD_MS);
+	blink_function(led_selected, blinking_led_period);
 }
 
 void turn_led(led_number_t led_to_turn, int status)

@@ -1,7 +1,7 @@
 /* INTERNAL TEMPERATURE SENSOR CONFIGURATION*/
 
 // Internal temperature refresh period
-#define INTERNAL_TEMP_SENSOR_PERIOD_MS 2000
+struct timespec internal_temp_period = { .tv_sec = 2, .tv_nsec = 0 };
 
 // Constants for conversion of the internal temperature sensor value
 #define MAX_CONVERTED_VALUE 4095 /* Max converted value */

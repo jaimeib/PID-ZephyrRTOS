@@ -119,14 +119,13 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/*FIXME: #1 NO POSIX SUPPORT IN ZEPHYR
+	//FIXME: #4 No POSIX support on Zephyr for pthread_attr_setinheritsched & PTHREAD_EXPLICIT_SCHED
 	// Never forget the inheritsched attribute
 	// Otherwise the scheduling attributes are not used
 	if (pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED) != 0) {
 		printf("Error in inheritsched attribute\n");
 		exit(1);
 	}
-	*/
 
 	// Thread is created dettached
 	if (pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED) != 0) {
@@ -161,7 +160,7 @@ int main(void)
 
 	//PUBLISHER THREAD:
 
-	// Set the priority of sMQTT publisher thread to min_prio+9
+	// Set the priority of MQTT publisher thread to min_prio+9
 	sch_param.sched_priority = (sched_get_priority_min(SCHED_FIFO) + 9);
 	if (pthread_attr_setschedparam(&attr, &sch_param) != 0) {
 		printf("Error in atribute schedparam of MQTT publisher thread\n");

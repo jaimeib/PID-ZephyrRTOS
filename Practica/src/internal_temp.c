@@ -16,6 +16,7 @@
 //Modules
 #include "main.h"
 #include "internal_temp.h"
+#include "timespec_operations.h"
 
 void SystemClock_Config(void)
 {
@@ -82,7 +83,9 @@ static void Error_Handler(void)
 		printf("Error...");
 
 		//Sleep 20 ms
-		HAL_Delay(20);
+
+		//FIXME: #5 No POSIX support on Zephyr for usleep
+		usleep(20000);
 	}
 }
 
@@ -92,6 +95,8 @@ void internal_temp(void *ptr_result)
 	extern pthread_cond_t cond_result;
 	extern bool new_result_for_supervisor;
 	extern bool new_result_for_publisher;
+
+	int rc;
 
 	printf("Internal temperature thread started\n");
 
@@ -104,6 +109,10 @@ void internal_temp(void *ptr_result)
 
 	/* Configure the ADC peripheral */
 	ADC_Config();
+
+	//Read initial time:
+	struct timespec initial_ts;
+	clock_gettime(CLOCK_MONOTONIC, &initial_ts);
 
 	// Infinite loop
 	while (true) {
@@ -134,6 +143,13 @@ void internal_temp(void *ptr_result)
 		pthread_mutex_unlock(&mutex_result);
 
 		//Wait for period (next activation):
-		k_msleep(INTERNAL_TEMP_SENSOR_PERIOD_MS);
+		incr_timespec(&initial_ts, &internal_temp_period);
+
+		//FIXME: #6 No POSIX support on Zephyr for clock_nanosleep
+		if ((rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &initial_ts, NULL)) !=
+		    0) {
+			printf("Error in clock_nanosleep: %d\n", rc);
+			pthread_exit(NULL);
+		}
 	}
 }
