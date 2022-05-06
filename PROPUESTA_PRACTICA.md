@@ -1,5 +1,7 @@
 # Propuesta de Práctica
 
+> _Propuesta de práctica para la monitorización con sensores_
+
 ## Introducción
 
 ## Descripción de los threads:
