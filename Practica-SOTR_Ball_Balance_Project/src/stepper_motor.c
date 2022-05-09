@@ -1,11 +1,18 @@
+//Standard C + POSIX API
 #include <stdio.h>
 #include <posix/unistd.h>
 #include <posix/pthread.h>
 #include <sched.h>
 #include <time.h>
+
+// HAL API
+#include <stm32f7xx_hal.h>
+#include <stm32f7xx_hal_adc.h>
+#include "HAL_ADC.h"
+
+//Modules
 #include <misc/error_checks.h>
 #include <misc/timespec_operations.h>
-#include <Arduino.h>
 #include "stepper_motor.h"
 
 static int motor_pin1; // 28BYJ48 In1
@@ -56,10 +63,13 @@ pthread_t stepper_motor_initialize(int pin1, int pin2, int pin3, int pin4, int p
 	motor_pin2 = pin2;
 	motor_pin3 = pin3;
 	motor_pin4 = pin4;
-	pinMode(motor_pin1, OUTPUT); //TODO:
-	pinMode(motor_pin2, OUTPUT);
-	pinMode(motor_pin3, OUTPUT);
-	pinMode(motor_pin4, OUTPUT);
+
+	//Configure the GPIO pins:
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.Pin = motor_pin1 | motor_pin2 | motor_pin3 | motor_pin4;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	stepper_motor_setspeed(20);
 
@@ -68,7 +78,7 @@ pthread_t stepper_motor_initialize(int pin1, int pin2, int pin3, int pin4, int p
 	pthread_t th;
 	struct sched_param sch_param;
 	CHK(pthread_attr_init(&attr));
-	CHK(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)); //FIXME: ??
+	//CHK(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)); //FIXME:
 	CHK(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
 	CHK(pthread_attr_setschedpolicy(&attr, SCHED_FIFO));
 	sch_param.sched_priority = prio;
