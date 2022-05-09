@@ -7,8 +7,6 @@
 
 //Modules
 #include <misc/error_checks.h>
-#include <Arduino.h> //TODO:
-#include <wiring_analog.h> //TODO:
 #include "gui.h"
 #include "stepper_motor.h"
 #include "controller.h"

@@ -135,7 +135,7 @@ int gui_initialize(int prio, struct timespec period, int real_x_left, int real_x
 
 	// Crea el objeto de atributos
 	CHK(pthread_attr_init(&attr));
-	CHK(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)); //FIXME: ??
+	//CHK(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)); //FIXME:
 	CHK(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
 	CHK(pthread_attr_setschedpolicy(&attr, SCHED_FIFO));
 	sch_param.sched_priority = prio;

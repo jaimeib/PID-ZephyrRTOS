@@ -6,8 +6,10 @@
 #include <sched.h>
 #include <time.h>
 
-#include <Arduino.h> //TODO:
-#include <wiring_analog.h> //TODO:
+// HAL API
+#include <stm32f7xx_hal.h>
+#include <stm32f7xx_hal_adc.h>
+#include "HAL_ADC.h"
 
 //Modules
 #include <misc/error_checks.h>
@@ -16,7 +18,6 @@
 #include "stepper_motor.h"
 #include "controller.h"
 
-#define ANALOG_PIN 1
 #define DIST_READ_MARGIN 0
 #define DIST_MIN 500
 
@@ -28,14 +29,19 @@ static uint16_t distance = (CONTROLLER_DIST_NEAR - CONTROLLER_DIST_FAR) / 2;
 static int angle;
 static int integral = 0;
 
-static int distance_mean(int pin)
+static int distance_mean()
 {
 #define NUM_MEASUREMENTS 3
 	uint32_t sum = 0;
 	uint32_t measure = 0;
 	for (int i = 0; i < NUM_MEASUREMENTS; i++) {
 		do {
-			measure = analogRead(pin);
+			// Select ADC_CH0
+			ADC_Select_CH0();
+			HAL_ADC_Start(&AdcHandle);
+			HAL_ADC_PollForConversion(&AdcHandle, 1000);
+			measure = HAL_ADC_GetValue(&AdcHandle);
+			HAL_ADC_Stop(&AdcHandle);
 		} while (measure < CONTROLLER_DIST_FAR - DIST_READ_MARGIN ||
 			 measure > CONTROLLER_DIST_NEAR + DIST_READ_MARGIN);
 		sum += measure;
@@ -89,10 +95,26 @@ static void *controller_thread_body(void *arg)
 	//int dist_prev = analogRead(ANALOG_PIN);
 	integral = 0;
 
-	while (1) {
+	//Configure sharp sensor with HAL API
+
+	SystemClock_Config();
+
+	/* Configure the ADC peripheral*/
+	ADC_Config();
+
+	// Hal API
+	GPIO_InitTypeDef GPIO_InitStruct;
+
+	// Pin A0 is in PA6, so we need to set it up!
+	GPIO_InitStruct.Pin = GPIO_PIN_6;
+	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	while (true) {
 		dist_input_gui = gui_get_real_ball_x();
 		//uint16_t dist_input_gui = (CONTROLLER_DIST_FAR + CONTROLLER_DIST_NEAR) / 2 - 100;
-		distance = distance_mean(ANALOG_PIN);
+		distance = distance_mean();
 
 		integral += dist_input_gui - distance;
 		angle = (dist_input_gui - distance) * KP + integral * KI;
@@ -114,7 +136,7 @@ pthread_t controller_initialize(int prio, struct timespec period)
 	thread_period = period;
 
 	CHK(pthread_attr_init(&attr));
-	CHK(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)); //FIXME: ??
+	//CHK(pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED)); //FIXME:
 	CHK(pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
 	CHK(pthread_attr_setschedpolicy(&attr, SCHED_FIFO));
 	sch_param.sched_priority = prio;
