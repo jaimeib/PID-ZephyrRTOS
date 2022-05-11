@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <posix/unistd.h>
 #include <posix/pthread.h>
-#include <sched.h>
+//#include <sched.h>
 #include <time.h>
+#include <errno.h>
 
 // HAL API
 #include <stm32f7xx_hal.h>
@@ -90,7 +91,7 @@ static void *controller_thread_body(void *arg)
 {
 	struct timespec next_activation;
 
-	CHKE(clock_gettime(CLOCK_MONOTONIC, &next_activation));
+	CHK(clock_gettime(CLOCK_MONOTONIC, &next_activation));
 
 	//int dist_prev = analogRead(ANALOG_PIN);
 	integral = 0;

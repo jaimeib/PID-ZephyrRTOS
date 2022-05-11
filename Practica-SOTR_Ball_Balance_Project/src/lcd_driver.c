@@ -19,8 +19,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "stm32f7xx_hal.h"
-#include "stm32f769i_discovery.h"
-#include "stm32f769i_discovery_lcd.h"
+//#include "stm32f769i_discovery.h"
+//#include "stm32f769i_discovery_lcd.h"
 
 // Defined in GNAT_IO_Driver_Functions
 int gnat_io_driver_functions__create();

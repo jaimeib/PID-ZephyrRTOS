@@ -23,7 +23,7 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef	ERROR_CHECKS_H_
+#ifndef ERROR_CHECKS_H_
 #define ERROR_CHECKS_H_
 
 #include <string.h>
@@ -35,11 +35,14 @@
 // ("modern" POSIX functions). Functions that return zero if
 // successful; otherwise, they return an error number to indicate the
 // error.
-#define CHK(p) { int ret;                                      \
-                 if ((ret = p)) {			       \
-                   printf ("Error:"#p":%s\n", strerror (ret)); \
-                   exit (-1);                                  \
-                 }                                             \
-               }
+#define CHK(p)                                                                                     \
+	{                                                                                          \
+		int ret;                                                                           \
+		if ((ret = p)) {                                                                   \
+			printf("Error:" #p ":%d\n",                                                \
+			       strerror(ret)); //FIXME:                               \
+			exit(-1);                                                                  \
+		}                                                                                  \
+	}
 
 #endif // ERROR_CHECKS_H_
