@@ -1,4 +1,3 @@
-
 //Standart C + POSIX API
 #include <posix/pthread.h>
 #include <time.h>
