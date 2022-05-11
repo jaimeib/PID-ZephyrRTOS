@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <posix/unistd.h>
 #include <posix/pthread.h>
-#include <sched.h>
+//#include <sched.h>
 #include <time.h>
+#include <math.h>
 
 // HAL API
 #include <stm32f7xx_hal.h>
@@ -44,12 +45,17 @@ static int step_index()
 	return mod;
 }
 
+static int bitRead(int value, int bit)
+{
+	return (value >> bit) & 0b0001;
+}
+
 static void motor_rotate_step()
 {
-	digitalWrite(motor_pin1, bitRead(steps_lookup[step_index()], 0)); //TODO:
-	digitalWrite(motor_pin2, bitRead(steps_lookup[step_index()], 1));
-	digitalWrite(motor_pin3, bitRead(steps_lookup[step_index()], 2));
-	digitalWrite(motor_pin4, bitRead(steps_lookup[step_index()], 3));
+	HAL_GPIO_WritePin(GPIOD, motor_pin1, bitRead(steps_lookup[step_index()], 0));
+	HAL_GPIO_WritePin(GPIOD, motor_pin2, bitRead(steps_lookup[step_index()], 1));
+	HAL_GPIO_WritePin(GPIOD, motor_pin3, bitRead(steps_lookup[step_index()], 2));
+	HAL_GPIO_WritePin(GPIOD, motor_pin4, bitRead(steps_lookup[step_index()], 3));
 }
 
 static void *thread_motor(void *arg);
@@ -149,7 +155,7 @@ static void *thread_motor(void *arg)
 {
 	struct timespec next_activation;
 
-	CHKE(clock_gettime(CLOCK_MONOTONIC, &next_activation));
+	CHK(clock_gettime(CLOCK_MONOTONIC, &next_activation));
 
 	while (1) {
 		if (step_counter < step_counter_objective) {
