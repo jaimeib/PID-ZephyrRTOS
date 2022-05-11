@@ -1,3 +1,6 @@
+//Standard C + POSIX API
+#include <stdio.h>
+
 // Hal API
 #include <stm32f7xx_hal.h>
 #include <stm32f7xx_hal_adc.h>
@@ -27,7 +30,7 @@ void ADC_Select_CH0(void)
   * @param  None
   * @retval None
   */
-static void ADC_Config(void)
+void ADC_Config(void)
 {
 	/* Configure the ADC peripheral */
 	AdcHandle.Instance = ADC1;
@@ -60,7 +63,7 @@ static void ADC_Config(void)
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
+void Error_Handler(void)
 {
 	while (1) {
 		//Print error message
