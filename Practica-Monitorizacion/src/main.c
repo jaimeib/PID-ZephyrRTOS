@@ -243,4 +243,6 @@ int main(void)
 		printf("Error: failed to create internal temperature thread\n");
 		exit(EXIT_FAILURE);
 	}
+
+	return 0;
 }

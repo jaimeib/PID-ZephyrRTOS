@@ -149,10 +149,10 @@ static char *get_mqtt_payload(thread_result_t *ptr_result, enum mqtt_qos qos)
 
 	switch (data.type) {
 	case LIGHT:
-		snprintk(payload, sizeof(payload), "{light:%d}", data.value);
+		snprintk(payload, sizeof(payload), "{light:%f}", data.value);
 		break;
 	case INTERNAL_TEMPERATURE:
-		snprintk(payload, sizeof(payload), "{temperature:%d}", data.value);
+		snprintk(payload, sizeof(payload), "{temperature:%f}", data.value);
 		break;
 	default:
 		break;
