@@ -17,12 +17,21 @@
 #include "main.h"
 #include "internal_temp.h"
 
-static void SystemClock_Config(void)
+/* ADC handler declaration */
+static ADC_HandleTypeDef AdcHandle;
+
+//ADC FUNCTIONS:
+static void ADC_Config(void);
+static void Error_Handler(void);
+static void SystemClock_Config(void);
+static void ADC_Select_CHTemp(void);
+
+void SystemClock_Config(void)
 {
 	__HAL_RCC_ADC1_CLK_ENABLE();
 }
 
-static void ADC_Select_CHTemp(void)
+void ADC_Select_CHTemp(void)
 {
 	ADC_ChannelConfTypeDef sConfig = { 0 };
 
@@ -43,7 +52,7 @@ static void ADC_Select_CHTemp(void)
   * @param  None
   * @retval None
   */
-static void ADC_Config(void)
+void ADC_Config(void)
 {
 	/* Configure the ADC peripheral */
 	AdcHandle.Instance = ADC1;
@@ -76,7 +85,7 @@ static void ADC_Config(void)
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
+void Error_Handler(void)
 {
 	while (1) {
 		printf("Error...");
@@ -97,7 +106,7 @@ void internal_temp(void *ptr_result)
 
 	/* Variable used to get converted value */
 	__IO int32_t ConvertedValue = 0;
-	int32_t JTemp = 0x0;
+	double Temp = 0.0;
 
 	// Habilitar el reloj ADC1
 	SystemClock_Config();
@@ -115,17 +124,18 @@ void internal_temp(void *ptr_result)
 		HAL_ADC_Stop(&AdcHandle);
 
 		// Compute the Junction Temperature value in degreeC
-		JTemp = ((((ConvertedValue * VREF) / MAX_CONVERTED_VALUE) - VSENS_AT_AMBIENT_TEMP) *
-			 10 / AVG_SLOPE) +
-			AMBIENT_TEMP;
+		Temp = (((((double)ConvertedValue * VREF) / MAX_CONVERTED_VALUE) -
+			 VSENS_AT_AMBIENT_TEMP) *
+			10 / AVG_SLOPE) +
+		       AMBIENT_TEMP;
 
 		// Print the value
-		printf("Internal Temperature is %d degrees \n", JTemp);
+		printf("Internal Temperature is %f degrees \n", Temp);
 
 		// Send the temperature to the supervisor thread
 		pthread_mutex_lock(&mutex_result);
 		((thread_result_t *)ptr_result)->type = INTERNAL_TEMPERATURE;
-		((thread_result_t *)ptr_result)->value = JTemp;
+		((thread_result_t *)ptr_result)->value = Temp;
 
 		// Notify the supervisor & publisher threads
 		new_result_for_supervisor = true;

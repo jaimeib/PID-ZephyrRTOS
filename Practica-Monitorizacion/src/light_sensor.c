@@ -17,12 +17,21 @@
 #include "main.h"
 #include "light_sensor.h"
 
-static void SystemClock_Config(void)
+/* ADC handler declaration */
+static ADC_HandleTypeDef AdcHandle;
+
+//ADC FUNCTIONS:
+static void ADC_Config(void);
+static void Error_Handler(void);
+static void SystemClock_Config(void);
+static void ADC_Select_CH0(void);
+
+void SystemClock_Config(void)
 {
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Habilita el reloj ADC1
 }
 
-static void ADC_Select_CH0(void)
+void ADC_Select_CH0(void)
 {
 	ADC_ChannelConfTypeDef sConfig = { 0 };
 	/* Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -41,7 +50,7 @@ static void ADC_Select_CH0(void)
   * @param  None
   * @retval None
   */
-static void ADC_Config(void)
+void ADC_Config(void)
 {
 	/* Configure the ADC peripheral */
 	AdcHandle.Instance = ADC1;
@@ -74,7 +83,7 @@ static void ADC_Config(void)
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
+void Error_Handler(void)
 {
 	while (1) {
 		//Print error message
@@ -96,7 +105,7 @@ void light_sensor(void *ptr_result)
 
 	/* Variable used to get converted value */
 	__IO int32_t converted_light = 0;
-	int light_normalized = 0;
+	double light_normalized = 0;
 
 	SystemClock_Config();
 
@@ -122,10 +131,10 @@ void light_sensor(void *ptr_result)
 		HAL_ADC_Stop(&AdcHandle);
 
 		// Normalize the light value
-		light_normalized = converted_light * MAX_LIGHT_VALUE / MAX_CONVERTED_VALUE;
+		light_normalized = (double)converted_light * MAX_LIGHT_VALUE / MAX_CONVERTED_VALUE;
 
 		// Print the light value
-		printf("Light percentage: %d \n", light_normalized);
+		printf("Light percentage: %f \n", light_normalized);
 
 		// Send the light value to the supervisor thread
 		pthread_mutex_lock(&mutex_result);
