@@ -1,5 +1,4 @@
-#ifndef _MARTE_STEPPER_MOTOR_H_
-#define _MARTE_STEPPER_MOTOR_H_
+
 #include <posix/pthread.h>
 
 // Initialice the internal thread to manage a stepper motor.
@@ -25,5 +24,3 @@ int stepper_motor_get_current_step();
 int stepper_motor_get_current_step_objective();
 
 void stepper_motor_status(int *step_current, int *step_objective);
-
-#endif // _MARTE_STEPPER_MOTOR_H_

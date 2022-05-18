@@ -8,8 +8,6 @@
 
 // HAL API
 #include <stm32f7xx_hal.h>
-#include <stm32f7xx_hal_adc.h>
-#include "HAL_ADC.h"
 
 //Modules
 #include <misc/error_checks.h>
@@ -52,10 +50,10 @@ static int bitRead(int value, int bit)
 
 static void motor_rotate_step()
 {
-	HAL_GPIO_WritePin(GPIOD, motor_pin1, bitRead(steps_lookup[step_index()], 0));
-	HAL_GPIO_WritePin(GPIOD, motor_pin2, bitRead(steps_lookup[step_index()], 1));
-	HAL_GPIO_WritePin(GPIOD, motor_pin3, bitRead(steps_lookup[step_index()], 2));
-	HAL_GPIO_WritePin(GPIOD, motor_pin4, bitRead(steps_lookup[step_index()], 3));
+	HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_4, bitRead(steps_lookup[step_index()], 0));
+	HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_3, bitRead(steps_lookup[step_index()], 1));
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, bitRead(steps_lookup[step_index()], 2));
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, bitRead(steps_lookup[step_index()], 3));
 }
 
 static void *thread_motor(void *arg);
@@ -70,12 +68,38 @@ pthread_t stepper_motor_initialize(int pin1, int pin2, int pin3, int pin4, int p
 	motor_pin3 = pin3;
 	motor_pin4 = pin4;
 
-	//Configure the GPIO pins:
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOF_CLK_ENABLE();
+	__HAL_RCC_GPIOJ_CLK_ENABLE();
+
 	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.Pin = motor_pin1 | motor_pin2 | motor_pin3 | motor_pin4;
+
+	//Configure GPIO pins:
+
+	// Pin D5 is in PC8, so we need to set it up!
+	GPIO_InitStruct.Pin = GPIO_PIN_8;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	// Pin D6 is in PF7, so we need to set it up!
+	GPIO_InitStruct.Pin = GPIO_PIN_7;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	// Pin D7 is in PJ3, so we need to set it up!
+	GPIO_InitStruct.Pin = GPIO_PIN_3;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOJ, &GPIO_InitStruct);
+
+	// Pin D8 is in PJ4, so we need to set it up!
+	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(GPIOJ, &GPIO_InitStruct);
 
 	stepper_motor_setspeed(20);
 

@@ -39,8 +39,7 @@
 	{                                                                                          \
 		int ret;                                                                           \
 		if ((ret = p)) {                                                                   \
-			printf("Error:" #p ":%d\n",                                                \
-			       strerror(ret)); //FIXME:                               \
+			printf("Error:" #p ":%d\n", ret);                                          \
 			exit(-1);                                                                  \
 		}                                                                                  \
 	}
