@@ -26,12 +26,12 @@ static void Error_Handler(void);
 static void SystemClock_Config(void);
 static void ADC_Select_CH0(void);
 
-void SystemClock_Config(void)
+static void SystemClock_Config(void)
 {
 	__HAL_RCC_ADC1_CLK_ENABLE(); // Habilita el reloj ADC1
 }
 
-void ADC_Select_CH0(void)
+static void ADC_Select_CH0(void)
 {
 	ADC_ChannelConfTypeDef sConfig = { 0 };
 	/* Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -50,7 +50,7 @@ void ADC_Select_CH0(void)
   * @param  None
   * @retval None
   */
-void ADC_Config(void)
+static void ADC_Config(void)
 {
 	/* Configure the ADC peripheral */
 	AdcHandle.Instance = ADC1;
@@ -83,7 +83,7 @@ void ADC_Config(void)
   * @param  None
   * @retval None
   */
-void Error_Handler(void)
+static void Error_Handler(void)
 {
 	while (1) {
 		//Print error message
