@@ -26,12 +26,12 @@ static void Error_Handler(void);
 static void SystemClock_Config(void);
 static void ADC_Select_CHTemp(void);
 
-void SystemClock_Config(void)
+static void SystemClock_Config(void)
 {
 	__HAL_RCC_ADC1_CLK_ENABLE();
 }
 
-void ADC_Select_CHTemp(void)
+static void ADC_Select_CHTemp(void)
 {
 	ADC_ChannelConfTypeDef sConfig = { 0 };
 
@@ -52,7 +52,7 @@ void ADC_Select_CHTemp(void)
   * @param  None
   * @retval None
   */
-void ADC_Config(void)
+static void ADC_Config(void)
 {
 	/* Configure the ADC peripheral */
 	AdcHandle.Instance = ADC1;
@@ -85,7 +85,7 @@ void ADC_Config(void)
   * @param  None
   * @retval None
   */
-void Error_Handler(void)
+static void Error_Handler(void)
 {
 	while (1) {
 		printf("Error...");
