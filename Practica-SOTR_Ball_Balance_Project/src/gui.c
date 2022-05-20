@@ -52,11 +52,8 @@ static struct timespec thread_period;
 
 void *gui_thread_body(void *args)
 {
-	struct timespec next_activation;
 	uint16_t real_ball_x;
 	ball_touch_x = screen_get_x_size() / 2;
-
-	CHKE(clock_gettime(CLOCK_MONOTONIC, &next_activation));
 
 	while (1) {
 		// clear balls in the former position
@@ -113,9 +110,8 @@ void *gui_thread_body(void *args)
 		screen_print_text(TEXT_X, TEXT_Y + 90, str, LCD_COLOR_BLACK);
 
 		// Wait for the next activation
-		incr_timespec(&next_activation, &thread_period);
-		CHK(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_activation,
-				    NULL)); //FIXME:
+		long period_ms = timespec2msec(&thread_period);
+		k_msleep(period_ms);
 	}
 }
 

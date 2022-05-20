@@ -3,7 +3,7 @@
 
 // Initialice the internal thread to manage a stepper motor.
 // Return the internal thread id.
-pthread_t stepper_motor_initialize(int pin1, int pin2, int pin3, int pin4, int prio);
+pthread_t stepper_motor_initialize(int prio);
 
 // Set the desired speed.
 void stepper_motor_setspeed(double grads_per_second);

@@ -13,10 +13,6 @@
 #include "screen.h"
 
 const int stepper_prio = 9;
-#define STEPPER_PIN_1 5
-#define STEPPER_PIN_2 6
-#define STEPPER_PIN_3 7
-#define STEPPER_PIN_4 8
 const int controller_prio = 7;
 const struct timespec controller_period = { 0, 5000000 };
 const int gui_prio = 4;
@@ -36,8 +32,7 @@ int main(void)
 	gui_initialize(gui_prio, gui_period, CONTROLLER_DIST_NEAR, CONTROLLER_DIST_FAR);
 
 	// inicializar stepper motor
-	stepper_motor_initialize(STEPPER_PIN_1, STEPPER_PIN_2, STEPPER_PIN_3, STEPPER_PIN_4,
-				 stepper_prio);
+	stepper_motor_initialize(stepper_prio);
 
 	// inicializar controlador
 	th_controller = controller_initialize(controller_prio, controller_period);

@@ -164,10 +164,6 @@ struct timespec thread_period;
 
 static void *controller_thread_body(void *arg)
 {
-	struct timespec next_activation;
-
-	CHK(clock_gettime(CLOCK_MONOTONIC, &next_activation));
-
 	//int dist_prev = analogRead(ANALOG_PIN);
 	integral = 0;
 
@@ -197,9 +193,8 @@ static void *controller_thread_body(void *arg)
 		//printf("d:%d o:%d angle:%d \n", dist_current, dist_input_gui, angle);
 		stepper_motor_move_to_step(angle);
 
-		incr_timespec(&next_activation, &thread_period);
-		CHK(clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_activation,
-				    NULL)); //FIXME:
+		long period_ms = timespec2msec(&thread_period);
+		k_msleep(period_ms);
 	}
 }
 
