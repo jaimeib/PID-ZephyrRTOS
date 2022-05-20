@@ -15,8 +15,7 @@ int main(int argc, char **argv)
 	printf("Demo stepper in pins %d %d %d %d\n", STEPPER_PIN_1, STEPPER_PIN_2, STEPPER_PIN_3,
 	       STEPPER_PIN_4);
 
-	stepper_motor_initialize(STEPPER_PIN_1, STEPPER_PIN_2, STEPPER_PIN_3, STEPPER_PIN_4,
-				 stepper_prio);
+	stepper_motor_initialize(stepper_prio);
 	stepper_motor_setspeed(6);
 	printf("s:%d o:%d\n", stepper_motor_get_current_step(),
 	       stepper_motor_get_current_step_objective());

@@ -18,11 +18,6 @@
 #define STACKSIZE 1024
 K_THREAD_STACK_ARRAY_DEFINE(stacks, 1, STACKSIZE);
 
-static int motor_pin1; // 28BYJ48 In1
-static int motor_pin2; // 28BYJ48 In2
-static int motor_pin3; // 28BYJ48 In3
-static int motor_pin4; // 28BYJ48 In4
-
 static int step_counter = 0; // contador para los pasos
 static int step_counter_objective = 0;
 
@@ -54,9 +49,9 @@ static int bitRead(int value, int bit)
 
 static void motor_rotate_step()
 {
-	HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_4, bitRead(steps_lookup[step_index()], 0));
-	HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_3, bitRead(steps_lookup[step_index()], 1));
-	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, bitRead(steps_lookup[step_index()], 2));
+	HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_4, bitRead(steps_lookup[step_index()], 0)); //28BYJ48 In1
+	HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_3, bitRead(steps_lookup[step_index()], 1)); //28BYJ48 In2
+	HAL_GPIO_WritePin(GPIOF, GPIO_PIN_7, bitRead(steps_lookup[step_index()], 2)); //28BYJ48 In3
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, bitRead(steps_lookup[step_index()], 3));
 }
 
@@ -64,14 +59,8 @@ static void *thread_motor(void *arg);
 
 // Initialice the internal thread to manage a stepper motor.
 // Returns the internal thread id.
-pthread_t stepper_motor_initialize(int pin1, int pin2, int pin3, int pin4, int prio)
+pthread_t stepper_motor_initialize(int prio)
 {
-	// assign pins
-	motor_pin1 = pin1;
-	motor_pin2 = pin2;
-	motor_pin3 = pin3;
-	motor_pin4 = pin4;
-
 	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	__HAL_RCC_GPIOF_CLK_ENABLE();
@@ -81,25 +70,25 @@ pthread_t stepper_motor_initialize(int pin1, int pin2, int pin3, int pin4, int p
 
 	//Configure GPIO pins:
 
-	// Pin D5 is in PC8, so we need to set it up!
+	// (In4) Pin D5 is in PC8, so we need to set it up!
 	GPIO_InitStruct.Pin = GPIO_PIN_8;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	// Pin D6 is in PF7, so we need to set it up!
+	// (In3) Pin D6 is in PF7, so we need to set it up!
 	GPIO_InitStruct.Pin = GPIO_PIN_7;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-	// Pin D7 is in PJ3, so we need to set it up!
+	// (In2) Pin D7 is in PJ3, so we need to set it up!
 	GPIO_InitStruct.Pin = GPIO_PIN_3;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOJ, &GPIO_InitStruct);
 
-	// Pin D8 is in PJ4, so we need to set it up!
+	// (In1) Pin D8 is in PJ4, so we need to set it up!
 	GPIO_InitStruct.Pin = GPIO_PIN_4;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
