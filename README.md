@@ -28,4 +28,6 @@ Es compatible con los protocolos de IoT estándar de la industria: [MQTT](https:
 
 ## [Guía de Inicio](GUIA_INICIO.md)
 
-## [Propuesta de práctica](PROPUESTA_PRACTICA.md)
+## [Propuesta de práctica - Monitorización con sensores](PROPUESTA_PRACTICA.md)
+
+## [Adaptación de la práctica de SOTR - Ball Balance Project](ADAPTACION_PRACTICA_SOTR.md)
