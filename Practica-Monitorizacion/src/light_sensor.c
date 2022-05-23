@@ -1,8 +1,3 @@
-// Zephyr API
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/gpio.h>
-
 // Standard C + POSIX API
 #include <stdio.h>
 #include <posix/time.h>

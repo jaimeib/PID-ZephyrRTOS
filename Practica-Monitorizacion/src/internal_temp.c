@@ -1,8 +1,3 @@
-// Zephyr API
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/gpio.h>
-
 // Standard C + POSIX API
 #include <stdio.h>
 #include <posix/time.h>
@@ -33,7 +28,7 @@ static void SystemClock_Config(void)
 
 static void ADC_Select_CHTemp(void)
 {
-	ADC_ChannelConfTypeDef sConfig = {0};
+	ADC_ChannelConfTypeDef sConfig = { 0 };
 
 	/* Configure ADC Temperature Sensor Channel */
 	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
@@ -41,8 +36,7 @@ static void ADC_Select_CHTemp(void)
 	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
 	sConfig.Offset = 0;
 
-	if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK)
-	{
+	if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK) {
 		/* Channel Configuration Error */
 		Error_Handler();
 	}
@@ -75,8 +69,7 @@ static void ADC_Config(void)
 	AdcHandle.Init.DMAContinuousRequests = DISABLE;
 	AdcHandle.Init.EOCSelection = DISABLE;
 
-	if (HAL_ADC_Init(&AdcHandle) != HAL_OK)
-	{
+	if (HAL_ADC_Init(&AdcHandle) != HAL_OK) {
 		/* ADC initialization Error */
 		Error_Handler();
 	}
@@ -89,8 +82,7 @@ static void ADC_Config(void)
  */
 static void Error_Handler(void)
 {
-	while (1)
-	{
+	while (1) {
 		printf("Error...");
 
 		// Sleep 20 ms
@@ -118,8 +110,7 @@ void internal_temp(void *ptr_result)
 	ADC_Config();
 
 	// Infinite loop
-	while (true)
-	{
+	while (true) {
 		// Select ADC_CHTemp
 		ADC_Select_CHTemp();
 		HAL_ADC_Start(&AdcHandle);
@@ -129,9 +120,9 @@ void internal_temp(void *ptr_result)
 
 		// Compute the Temperature value in degreeC
 		Temp = (((((double)ConvertedValue * VREF) / MAX_CONVERTED_VALUE) -
-				 VSENS_AT_AMBIENT_TEMP) *
-				10 / AVG_SLOPE) +
-			   AMBIENT_TEMP;
+			 VSENS_AT_AMBIENT_TEMP) *
+			10 / AVG_SLOPE) +
+		       AMBIENT_TEMP;
 
 		// Print the value
 		printf("Internal Temperature is %f degrees \n", Temp);

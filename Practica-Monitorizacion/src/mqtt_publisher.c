@@ -1,6 +1,4 @@
 // Zephyr API
-#include <zephyr.h>
-#include <device.h>
 #include <net/socket.h>
 #include <net/mqtt.h>
 
