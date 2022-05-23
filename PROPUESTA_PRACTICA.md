@@ -4,27 +4,33 @@
 
 ## Introducción
 
+La propuesta de práctica para la monitorización con sensores conectados a una placa STM32F769 Discovery Kit se divide en 2 partes:
+
+-   La primera parte se centra en desarrollar un programa concurrente que controle una serie de periféricos conectados en la placa: Se hará uso de los 3 leds de usuario de la placa, del sensor interno de temperatura, y del sensor de luminosidad conectado a un puerto de la GPIO. Además, de manera concurrente se tendrán que ir verificando los valores de los sensores y cambiando el estado de los leds en función de los valores obtenidos.
+
+-   La segunda parte se centra en exportar, de forma concurrente, los datos obtenidos por los sensores a través de una red de comunicación cableada, para su posterior análisis/visualización. En este caso, se hará uso del protocolo MQTT. Se publicarán en un servidor, las medidas realizadas de forma concurrente por los sensores. El servidor es un nodo local de la red. Este nodo ejecutará un contenedor de Docker, que ejecutará la plataforma Thingsboard, la cual permite la visualización de los datos recogidos de una forma sencilla, en unas gráficas.
+
 ## Descripción de los threads:
 
 ### - Thread LED:
 
-Este thread se encarga de encender y apagar el LED 1 (color rojo) de usuario de la placa, cada segundo.
+Este thread se encarga de encender y apagar el LED 1 (color rojo) de usuario de la placa, cada segundo. De esta forma se puede verificar que el programa está funcionando correctamente. Se emplea la propia API del sistema operativo para modificar el estado del LED.
 
 ### - Thread sensor de luz:
 
-Este thread se encarga de leer el valor del sensor de luz desde conectado al pin A0 de Arduino.
+Este thread se encarga de leer el valor del sensor de luz desde conectado al pin A0 de Arduino. Se realiza polling de este valor cada 1500 milisegundos. El valor del sensor se almacena en formato de porcentaje, de forma que el máximo valor que pueda tomar el sensor es de 100.0%, y el mínimo es de 0.0%. Debido a que es un puerto analógico, es necesario realizar una conversión del valor analógico a digital. Se hace uso de la API HAL, incluida en la librería del fabricante (STM32Cube), para utilizar tanto el conversor ADC, como la lectura del pin A0 de la placa de expansión de Arduino.
 
 ### - Thread sensor de temperatura interno:
 
-Este thread se encarga de leer el valor del sensor de temperatura interno de la placa.
+Este thread se encarga de leer el valor del sensor de temperatura interno de la placa. Se realiza polling de este valor cada 2000 milisegundos. El valor del sensor se almacena en formato de grados centígrados. Debido a que el termómetro interno es analógico, es necesario realizar una conversión del valor analógico a digital. Se hace uso de la API HAL, incluida en la librería del fabricante (STM32Cube), para utilizar tanto el conversor ADC, como la lectura del valor.
 
 ### - Thread supervisor:
 
-Este thread se encarga de obtener las lecturas de threads de los sensores, y en función de unos valores umbrales definidos, encender o apagar los LED de control (LEDs 2 y 3 de usuario de color verde).
+Este thread se encarga de obtener las lecturas de threads de los sensores, y en función de unos valores umbrales definidos, encender o apagar los LED de control (LEDs 2 y 3 de usuario de color verde). Cuando la luminosidad baje del valor umbral, se encenderá el LED 2 (Green LED 1), y cuando la luminosidad suba del valor umbral, se apagará. Cuando la temperatura suba por encima del valor umbral, se encenderá el LED 3 (Green LED 2), y cuando la temperatura sea menor que el valor umbral, se apagará. Los LEDs son controlados de la misma forma que se controlan desde el thread LED.
 
 ### - Thread de publicación MQTT:
 
-Este thread se encarga de publicar los datos de los sensores, utilizando el protocolo MQTT. Dicho thread deberá configurar y establecer la conexión con el broker MQTT y el cliente.
+Este thread se encarga de publicar los datos de los sensores, utilizando el protocolo MQTT. Dicho thread deberá configurar y establecer la conexión con el broker MQTT y el cliente. Se realiza una primera conexión a modo de ping, para comprobar la conectividad. Después se espera la llegada de resultados, para ser publicados. El propio thread deberá distinguir el tipo de sensor del cual recibe los datos para realizar la publicación con el Payload adecuado.
 
 ## Configuración de los threads:
 
@@ -61,6 +67,14 @@ Practica
     └── supervisor.c
 ```
 
+## Configuración de la placa STM32F769:
+
+Es necesario habilitar en la configuración de la placa, a través del fichero `prj.conf`, las siguientes características adicionales:
+
+-   El uso de pthreads
+-   El uso de la unidad de punto flotante (FPU)
+-   El uso de las interfaces de red, así como IPv4 y MQTT.
+
 ## Soporte POSIX en Zephyr RTOS:
 
 > [Soporte de POSIX en Zephyr RTOS](https://docs.zephyrproject.org/latest/services/portability/posix.html)
@@ -71,7 +85,7 @@ Practica
 
     > GitHub Issue [#4](https://github.com/jaimeib/Practica-PID-ZephyrRTOS/issues/4)
 
--   `usleep` para la espera de microsegundos. La llamada de esta función no está implementada como en el estandar POSIX. Hace uso de internamente de la llamada `k_msleep` de la API de Threads de Kernel suministrada por Zephyr.
+-   `usleep` para la espera de microsegundos. La llamada de esta función no está implementada como en el estándar POSIX. Hace uso de internamente de la llamada `k_msleep` de la API de Threads de Kernel suministrada por Zephyr.
 
     > GitHub Issue [#5](https://github.com/jaimeib/Practica-PID-ZephyrRTOS/issues/5)
 
@@ -125,3 +139,5 @@ Añadimos en el apartado de **Perfiles de Dispositivos** el perfil [stm32f769_pr
 > Es necesario modificar la identificación del dispositivo, ya que por defecto se genera un Access Token aleatorio. En este caso, se utilizará el identificador `zephyr_publisher`, definido en el fichero [mqtt_publisher.h](/Practica/src/include/mqtt_publisher.h), definido como `MQTT_CLIENTID`.
 
 Importamos el dashboard [ThingsBoard_dashboard.json](ThingsBoard/Plantillas/ThingsBoard_dashboard.json) proporcionado en el área de **Paneles**, y añadimos el dispositivo creado anteriormente, en el menú de **Alias de Dispositivos**.
+
+## Resultado de la práctica:

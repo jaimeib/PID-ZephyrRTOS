@@ -13,14 +13,14 @@
 #include <stm32f7xx_hal.h>
 #include <stm32f7xx_hal_adc.h>
 
-//Modules
+// Modules
 #include "main.h"
 #include "internal_temp.h"
 
 /* ADC handler declaration */
 static ADC_HandleTypeDef AdcHandle;
 
-//ADC FUNCTIONS:
+// ADC FUNCTIONS:
 static void ADC_Config(void);
 static void Error_Handler(void);
 static void SystemClock_Config(void);
@@ -33,7 +33,7 @@ static void SystemClock_Config(void)
 
 static void ADC_Select_CHTemp(void)
 {
-	ADC_ChannelConfTypeDef sConfig = { 0 };
+	ADC_ChannelConfTypeDef sConfig = {0};
 
 	/* Configure ADC Temperature Sensor Channel */
 	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
@@ -41,17 +41,18 @@ static void ADC_Select_CHTemp(void)
 	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
 	sConfig.Offset = 0;
 
-	if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK) {
+	if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK)
+	{
 		/* Channel Configuration Error */
 		Error_Handler();
 	}
 }
 
 /**
-  * @brief  Configure the ADC.
-  * @param  None
-  * @retval None
-  */
+ * @brief  Configure the ADC.
+ * @param  None
+ * @retval None
+ */
 static void ADC_Config(void)
 {
 	/* Configure the ADC peripheral */
@@ -74,23 +75,25 @@ static void ADC_Config(void)
 	AdcHandle.Init.DMAContinuousRequests = DISABLE;
 	AdcHandle.Init.EOCSelection = DISABLE;
 
-	if (HAL_ADC_Init(&AdcHandle) != HAL_OK) {
+	if (HAL_ADC_Init(&AdcHandle) != HAL_OK)
+	{
 		/* ADC initialization Error */
 		Error_Handler();
 	}
 }
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @param  None
+ * @retval None
+ */
 static void Error_Handler(void)
 {
-	while (1) {
+	while (1)
+	{
 		printf("Error...");
 
-		//Sleep 20 ms
+		// Sleep 20 ms
 		HAL_Delay(20);
 	}
 }
@@ -115,7 +118,8 @@ void internal_temp(void *ptr_result)
 	ADC_Config();
 
 	// Infinite loop
-	while (true) {
+	while (true)
+	{
 		// Select ADC_CHTemp
 		ADC_Select_CHTemp();
 		HAL_ADC_Start(&AdcHandle);
@@ -123,11 +127,11 @@ void internal_temp(void *ptr_result)
 		ConvertedValue = HAL_ADC_GetValue(&AdcHandle);
 		HAL_ADC_Stop(&AdcHandle);
 
-		// Compute the Junction Temperature value in degreeC
+		// Compute the Temperature value in degreeC
 		Temp = (((((double)ConvertedValue * VREF) / MAX_CONVERTED_VALUE) -
-			 VSENS_AT_AMBIENT_TEMP) *
-			10 / AVG_SLOPE) +
-		       AMBIENT_TEMP;
+				 VSENS_AT_AMBIENT_TEMP) *
+				10 / AVG_SLOPE) +
+			   AMBIENT_TEMP;
 
 		// Print the value
 		printf("Internal Temperature is %f degrees \n", Temp);
@@ -143,7 +147,7 @@ void internal_temp(void *ptr_result)
 		pthread_cond_broadcast(&cond_result);
 		pthread_mutex_unlock(&mutex_result);
 
-		//Wait for period (next activation):
+		// Wait for period (next activation):
 		k_msleep(INTERNAL_TEMP_SENSOR_PERIOD_MS);
 	}
 }

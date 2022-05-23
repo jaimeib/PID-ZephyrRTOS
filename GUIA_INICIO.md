@@ -17,13 +17,13 @@ source ~/zephyrproject/.venv/bin/activate
 
 La compilación de un programa se realiza con `west build -b <board-name> example`.
 Para pasar el binario a la memoria de la placa se ejecuta el comando `west flash`.
-Es necesario que la compilación se realice dentro del directorio `zephyr/`.
+Es necesario que la compilación se realice dentro del directorio `/zephyr`.
 
-> En algunos ejemplos se utiliza impresión por el puerto serie de la placa (dispositivo _/dev/ttyACM0_ al conectar por USB). Para poder visualizar la información, se puede utilizar un terminal gráfico como CuteCom. Se puede instalar fácilmente en Ubuntu con `apt-get install cutecom`.
+> En algunos ejemplos se utiliza impresión por el puerto serie de la placa (dispositivo _/dev/ttyACM0_ al conectar por el conector USB). Para poder visualizar la información, se puede utilizar un terminal gráfico como CuteCom. Se puede instalar fácilmente en Ubuntu con `sudo apt-get install cutecom`.
 
 ### Blinky Sample
 
-La muestra hace parpadear un LED usando la API _GPIO_.
+El programa hace parpadear un LED usando la API _GPIO_, propia del sistema operativo.
 
 ```
 west build -p auto -b stm32f769i_disco samples/basic/blinky
@@ -54,7 +54,7 @@ Los dos primeros controlan cada uno un LED. Estos LED, led0 y led1, se ejecuta e
 -   `blink0()` controla led0 y tiene un ciclo de suspensión de 100ms
 -   `blink1()` controla led1 y tiene un ciclo de suspensión de 1000 ms
 
-Cuando cualquiera de estos thread alterna su LED, también envía información a una cola FIFO que identifica el thread/LED y cuántas veces se ha activado.
+Cuando cualquiera de estos thread alterna el estado de su LED, también envía información a una cola FIFO que identifica el thread/LED y cuántas veces se ha activado.
 
 El tercer hilo usa `printk()` para imprimir la información agregada a la cola FIFO en la consola del dispositivo.
 
@@ -64,11 +64,19 @@ west build -p auto -b stm32f769i_disco samples/basic/threads
 
 ### Touchscreen Sample
 
+Este ejemplo demuestra cómo interactuar con un panel táctil. Cuando se detectan toques, se emite un mensaje de registro en la consola, que índica la posición del toque dentro del panel táctil.
+
 ```
 west build -p auto -b stm32f769i_disco samples/drivers/kscan_touch/
 ```
 
 ## 3. Prueba básica de los sensores
+
+### Sensor de temperatura interno y pin analógico A0 de Arduino
+
+Este ejemplo muestra la lectura de la temperatura interna de la placa, mediante un sensor integrado y el valor del pin analógico A0 de la placa Arduino. Para leer el valor analógico es necesario utilizar un conversor ADC. Este ejemplo hace uso de la librería STM32Cube suministrada por el fabricante de la placa.
+
+> El ejemplo se suministra en la carpeta [/Ejemplos/HAL_ADC/](Ejemplos/HAL_ADC/).
 
 ## 4. Prueba básica de las funciones de red
 
