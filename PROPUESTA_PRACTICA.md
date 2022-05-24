@@ -141,3 +141,9 @@ Añadimos en el apartado de **Perfiles de Dispositivos** el perfil [stm32f769_pr
 Importamos el dashboard [ThingsBoard_dashboard.json](ThingsBoard/Plantillas/ThingsBoard_dashboard.json) proporcionado en el área de **Paneles**, y añadimos el dispositivo creado anteriormente, en el menú de **Alias de Dispositivos**.
 
 ## Resultado de la práctica:
+
+
+
+https://user-images.githubusercontent.com/82649677/170076621-2e5f4194-e37f-4df5-b3af-730cd130f3c7.mp4
+
+
