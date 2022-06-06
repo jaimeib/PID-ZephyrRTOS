@@ -11,8 +11,6 @@
 #include "screen.h"
 #include "stepper_motor.h"
 #include "gui.h"
-//#include <Arduino.h>
-//#include <WMath.h>
 
 #define BAR_LENGTH 600
 #define BAR_HIGH 40

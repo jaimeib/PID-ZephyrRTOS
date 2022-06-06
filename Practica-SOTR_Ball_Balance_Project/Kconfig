@@ -14,3 +14,5 @@ config MYAPP_STM32
   select USE_STM32_LL_CORTEX
   select USE_STM32_HAL_PWR_EX
   select USE_STM32_LL_PWR_EX
+  select USE_STM32_HAL_LTDC
+  select USE_STM32_LL_LTDC

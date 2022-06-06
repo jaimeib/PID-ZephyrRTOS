@@ -23,7 +23,7 @@ int main(void)
 {
 	pthread_t th_controller;
 	printf("Ball balance\n");
-	sleep(1);
+	k_msleep(1000);
 
 	// inicializar pantalla
 	screen_initialize();

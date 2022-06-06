@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include "stm32f7xx_hal.h"
-//#include "stm32f769i_discovery.h"
-//#include "stm32f769i_discovery_lcd.h"
-//#include "stm32f769i_discovery_ts.h"
+#include <stm32f7xx.h>
+#include "stm32f7xx_hal_ltdc.h"
 #include "screen.h"
 
 #define BACKGROUND_COLOR LCD_COLOR_WHITE
