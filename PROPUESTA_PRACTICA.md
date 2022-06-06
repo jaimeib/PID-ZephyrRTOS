@@ -8,7 +8,7 @@ La propuesta de práctica para la monitorización con sensores conectados a una 
 
 -   La primera parte se centra en desarrollar un programa concurrente que controle una serie de periféricos conectados en la placa: Se hará uso de los 3 leds de usuario de la placa, del sensor interno de temperatura, y del sensor de luminosidad conectado a un puerto de la GPIO. Además, de manera concurrente se tendrán que ir verificando los valores de los sensores y cambiando el estado de los leds en función de los valores obtenidos.
 
--   La segunda parte se centra en exportar, de forma concurrente, los datos obtenidos por los sensores a través de una red de comunicación cableada, para su posterior análisis/visualización. En este caso, se hará uso del protocolo MQTT. Se publicarán en un servidor, las medidas realizadas de forma concurrente por los sensores. El servidor es un nodo local de la red. Este nodo ejecutará un contenedor de Docker, que ejecutará la plataforma Thingsboard, la cual permite la visualización de los datos recogidos de una forma sencilla, en unas gráficas.
+-   La segunda parte se centra en exportar, de forma concurrente, los datos obtenidos por los sensores a través de una red de comunicación cableada, para su posterior análisis/visualización. En este caso, se hará uso del protocolo MQTT. Se publicarán en un servidor, las medidas realizadas de forma concurrente por los sensores. El servidor es un nodo local de la red, por simplicidad a la hora de configurar la red. Este nodo ejecutará un contenedor de Docker, que ejecutará la plataforma Thingsboard, la cual permite la visualización de los datos recogidos de una forma sencilla, en unas gráficas.
 
 ## Descripción de los threads:
 
@@ -117,11 +117,20 @@ mkdir -p ~/.mytb-logs && sudo chown -R 799:799 ~/.mytb-logs
 
 > El path de los directorios se ha especificado anteriormente en el fichero de configuración.
 
-Por último, lanzamos el contenedor de Docker, desde el directorio de este el fichero de configuración `docker-compose.yml`.
+Por último, lanzamos el contenedor de Docker, desde el directorio donde este el fichero de configuración `docker-compose.yml`.
 
 ```bash
 docker compose pull
 docker compose up
+```
+
+Esperamos a que el servicio de ThingsBoard se inicie:
+
+```bash
+[+] Running 1/0
+ ⠿ Container docker-mytb-1  Created                                   0.0s
+Attaching to docker-mytb-1
+docker-mytb-1  | Starting ThingsBoard ...
 ```
 
 Para parar el contenedor, ejecutamos:
@@ -130,20 +139,18 @@ Para parar el contenedor, ejecutamos:
 docker compose down
 ```
 
+> Puede ser que el puerto 1883 esté ocupado por otro servicio, en ese caso, se debe cerrar el puerto y ejecutar de nuevo el contenedor.
+
 ### Configuración de ThingsBoard:
 
 En el navegador nos conectamos al servidor `http://localhost:8080` y nos autenticamos con el usuario `tenant@thingsboard.org` y la contraseña `tenant`, para configurar los paneles de los dispositivos.
 
 Añadimos en el apartado de **Perfiles de Dispositivos** el perfil [stm32f769_profile.json](ThingsBoard/Plantillas/stm32f769_profile.json) proporcionado y creamos un dispositivo usando dicho perfil.
 
-> Es necesario modificar la identificación del dispositivo, ya que por defecto se genera un Access Token aleatorio. En este caso, se utilizará el identificador `zephyr_publisher`, definido en el fichero [mqtt_publisher.h](/Practica/src/include/mqtt_publisher.h), definido como `MQTT_CLIENTID`.
+> Es necesario modificar la identificación del dispositivo, ya que por defecto se genera un Access Token aleatorio. En este caso, se utilizará el identificador `zephyr_publisher`, definido en el fichero [mqtt_publisher.h](/Practica/src/include/mqtt_publisher.h), como `MQTT_CLIENTID`.
 
 Importamos el dashboard [ThingsBoard_dashboard.json](ThingsBoard/Plantillas/ThingsBoard_dashboard.json) proporcionado en el área de **Paneles**, y añadimos el dispositivo creado anteriormente, en el menú de **Alias de Dispositivos**.
 
 ## Resultado de la práctica:
 
-
-
 https://user-images.githubusercontent.com/82649677/170076621-2e5f4194-e37f-4df5-b3af-730cd130f3c7.mp4
-
-

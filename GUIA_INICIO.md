@@ -23,7 +23,7 @@ Es necesario que la compilación se realice dentro del directorio `/zephyr`.
 
 ### Blinky Sample
 
-El programa hace parpadear un LED usando la API _GPIO_, propia del sistema operativo.
+El programa hace parpadear un LED usando la API para la _GPIO_ propia del sistema operativo.
 
 ```
 west build -p auto -b stm32f769i_disco samples/basic/blinky
@@ -47,16 +47,16 @@ west build -p auto -b stm32f769i_disco samples/basic/button
 
 ### Basic Thread Sample
 
-Este ejemplo demuestra la generación de varios threads mediante `K_THREAD_DEFINE()`. Genera tres hilos. Luego, cada thread se define en tiempo de compilación utilizando `K_THREAD_DEFINE`.
+Este ejemplo demuestra la generación de varios threads mediante `K_THREAD_DEFINE()`. Genera tres hilos:
 
-Los dos primeros controlan cada uno un LED. Estos LED, led0 y led1, se ejecuta en un bucle y la temporización de los leds es controlada por funciones separadas:
+-   Los dos primeros controlan cada uno un LED. Estos LED, led0 y led1, se ejecuta en un bucle y la temporización de los leds es controlada por funciones separadas:
 
--   `blink0()` controla led0 y tiene un ciclo de suspensión de 100ms
--   `blink1()` controla led1 y tiene un ciclo de suspensión de 1000 ms
+    -   `blink0()` controla led0 y tiene un ciclo de suspensión de 100ms
+    -   `blink1()` controla led1 y tiene un ciclo de suspensión de 1000 ms
 
-Cuando cualquiera de estos thread alterna el estado de su LED, también envía información a una cola FIFO que identifica el thread/LED y cuántas veces se ha activado.
+    Cuando cualquiera de estos thread alterna el estado de su LED, también envía información a una cola FIFO que identifica el thread/LED y cuántas veces se ha activado.
 
-El tercer hilo usa `printk()` para imprimir la información agregada a la cola FIFO en la consola del dispositivo.
+    -   El tercer hilo usa `printk()` para imprimir la información agregada a la cola FIFO en la consola del dispositivo.
 
 ```
 west build -p auto -b stm32f769i_disco samples/basic/threads
@@ -76,7 +76,11 @@ west build -p auto -b stm32f769i_disco samples/drivers/kscan_touch/
 
 Este ejemplo muestra la lectura de la temperatura interna de la placa, mediante un sensor integrado y el valor del pin analógico A0 de la placa Arduino. Para leer el valor analógico es necesario utilizar un conversor ADC. Este ejemplo hace uso de la librería STM32Cube suministrada por el fabricante de la placa.
 
-> El ejemplo se suministra en la carpeta [/Ejemplos/HAL_ADC/](Ejemplos/HAL_ADC/).
+Este ejemplo se prueba con el sensor de luz analógico conectado al pin A0 de la placa Arduino.
+
+<img src="https://media-cdn.seeedstudio.com/media/catalog/product/cache/9d0ce51a71ce6a79dfa2a98d65a0f0bd/h/t/httpsstatics3.seeedstudio.comseeedimg2016-10po8b7qd0xnlnchgogziq9g3d.jpg" width=50%><img src="https://media-cdn.seeedstudio.com/media/catalog/product/cache/9d0ce51a71ce6a79dfa2a98d65a0f0bd/h/t/httpsstatics3.seeedstudio.comseeedimg2016-10nnnmznegp7uybcvkdw0dkav5.jpg" width=50%>
+
+> El ejemplo se suministra en la carpeta [/Ejemplos/HAL_Light\_&_Internal_Temp(ADC)/](<Ejemplos/HAL_Light_&_Internal_Temp(ADC)/>).
 
 ## 4. Prueba básica de las funciones de red
 
@@ -127,7 +131,7 @@ En una terminal de Linux, ejecutaremos el broker de MQTT _mosquitto_ (se puede i
 mosquitto -v
 ```
 
-> En el caso de que muestre un mensaje de error, porque el puerto ya está en uso, es necesario matar al demonio de _mosquitto_ ya ejecutándose en el sistema, para liberar el puerto por defecto. (`kill -9 <PID>`)
+> En el caso de que muestre un mensaje de error, porque el puerto ya está en uso, es necesario matar al demonio de _mosquitto_ ya ejecutándose en el sistema, para liberar el puerto. (`kill -9 <PID>`)
 
 ## 5. Prueba básica con la plataforma ThingsBoard
 
@@ -175,5 +179,7 @@ Ahora creamos una publicación del sensor de luz con un valor de 50:
 Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/getting-started-guides/helloworld/?connectdevice=mqtt-linux) para crear un Dashboard. Se crea el alias de entidad necesario para el dispositivo, y se crea un Dashboard con una gráfica de temperatura y luminosidad.
 
 > Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/Plantillas/stm32f769_dashboard.json) ya creado, el cual se puede importar fácilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
+
+<img src="Img/Dashboard.png" width=100%>
 
 Con la configuración por defecto podemos ver que el panel muestra las gráficas de temperatura y luminosidad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.
