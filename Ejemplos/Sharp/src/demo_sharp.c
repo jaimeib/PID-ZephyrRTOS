@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 
 	while (1) {
 		sharp_sensor_dist_mm();
-		k_msleep(2000);
+		k_msleep(100);
 	}
 
 	return 0;
