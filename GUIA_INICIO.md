@@ -7,6 +7,8 @@ Zephyr se ha instalado correctamente en Ubuntu 20.04 LTS siguiendo las indicacio
 > [Documentación oficial del sistema operativo Zephyr Project de Linux Foundation](https://docs.zephyrproject.org/latest/index.html) -
 > [Repositorio oficial](https://github.com/zephyrproject-rtos/zephyr)
 
+> [Características del sistema operativo Zephyr RTOS](https://docs.zephyrproject.org/latest/introduction/index.html)
+
 ## 2. Prueba básica con la placa STM32F769 Discovery Kit
 
 Para empezar a trabajar es necesario activar el entorno virtual de Python:
@@ -20,6 +22,9 @@ Para pasar el binario a la memoria de la placa se ejecuta el comando `west flash
 Es necesario que la compilación se realice dentro del directorio `/zephyr`.
 
 > En algunos ejemplos se utiliza impresión por el puerto serie de la placa (dispositivo _/dev/ttyACM0_ al conectar por el conector USB). Para poder visualizar la información, se puede utilizar un terminal gráfico como CuteCom. Se puede instalar fácilmente en Ubuntu con `sudo apt-get install cutecom`.
+
+Algunos del componentes o periféricos todavía no son compatibles a través del sistema operativo Zephyr RTOS.
+> [Soporte de STM32F769 Discovery Kit utilizando Zephyr RTOS](https://docs.zephyrproject.org/latest/boards/arm/stm32f769i_disco/doc/index.html#)
 
 ### Blinky Sample
 
