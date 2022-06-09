@@ -1,6 +1,15 @@
 
 #include <posix/pthread.h>
 
+#define GPIO_IN1_PORT GPIOJ
+#define GPIO_IN1_PIN GPIO_PIN_4
+#define GPIO_IN2_PORT GPIOJ
+#define GPIO_IN2_PIN GPIO_PIN_3
+#define GPIO_IN3_PORT GPIOF
+#define GPIO_IN3_PIN GPIO_PIN_7
+#define GPIO_IN4_PORT GPIOC
+#define GPIO_IN4_PIN GPIO_PIN_8
+
 // Initialice the internal thread to manage a stepper motor.
 // Return the internal thread id.
 pthread_t stepper_motor_initialize(int prio);
