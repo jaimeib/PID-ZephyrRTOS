@@ -25,11 +25,23 @@ En el código se renombran estas constantes para que sean más descriptivas.
 
 > El ejemplo se suministra en la carpeta [/Ejemplos/Stepper/](Ejemplos/Stepper/).
 
+
+
+https://user-images.githubusercontent.com/82649677/172708371-044bf6ed-739e-49b8-8e35-57e42337eb68.mp4
+
+
+
 ### Demo del sensor de distancia infrarrojo (Sharp)
 
 El sensor de distancia infrarrojo esta conectado al conector A0 de la placa de expansión BaseShield de Arduino. Se obtiene el valor analógico por el pin A1 mapeado al `GPIO_PIN_4` de la `GPIOA`, utilizando la libreria HAL STM32Cube.
 
 > El ejemplo se suministra en la carpeta [/Ejemplos/Sharp/](Ejemplos/Sharp/).
+
+
+
+https://user-images.githubusercontent.com/82649677/172708457-4a6e58b9-3be3-4290-a254-f9ef57cb3525.mp4
+
+
 
 ## Adaptación de la práctica Ball_Balance_Project
 
