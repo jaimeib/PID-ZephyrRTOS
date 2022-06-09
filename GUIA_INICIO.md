@@ -180,6 +180,6 @@ Se siguen los pasos de la [guía de inicio rápido](https://thingsboard.io/docs/
 
 > Se proporciona un [Dashboard sencillo para pruebas](ThingsBoard/Plantillas/stm32f769_dashboard.json) ya creado, el cual se puede importar fácilmente en el apartado **Paneles** de la aplicación. Solo será necesario seleccionar el dispositivo creado en el Paso 1, en la lista desplegable de la creación de alias de entidad.
 
-<img src="Img/Dashboard.png" width=100%>
+<img src="Imagenes/Dashboard.png" width=100%>
 
 Con la configuración por defecto podemos ver que el panel muestra las gráficas de temperatura y luminosidad. Si repetimos algunas de las publicaciones anteriores, podemos ir viendo que los datos se actualizan en tiempo real.

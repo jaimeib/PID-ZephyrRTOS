@@ -47,7 +47,7 @@ Hay que tener en cuenta la que el stack de los threads debe ser de al menos 2048
 ## Estructura del proyecto:
 
 ```bash
-Practica
+Practica-Monitorizacion
 ├── CMakeLists.txt
 ├── include
 │   ├── internal_temp.h
