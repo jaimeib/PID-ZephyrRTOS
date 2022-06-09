@@ -1,0 +1,20 @@
+mainmenu "MYAPP"
+
+source "Kconfig.zephyr"
+config MYAPP_STM32
+  default y
+  bool
+  select USE_STM32_HAL_GPIO
+  select USE_STM32_LL_GPIO
+  select USE_STM32_HAL_ADC
+  select USE_STM32_LL_ADC
+  select USE_STM32_HAL_DMA
+  select USE_STM32_LL_DMA
+  select USE_STM32_HAL_CORTEX
+  select USE_STM32_LL_CORTEX
+  select USE_STM32_HAL_PWR_EX
+  select USE_STM32_LL_PWR_EX
+  select USE_STM32_HAL_TIM
+  select USE_STM32_LL_TIM
+  select USE_STM32_HAL_TIM_EX
+  select USE_STM32_LL_TIM_EX
