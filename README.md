@@ -12,7 +12,7 @@
 
 ## Placa STM32F769 Discovery Kit
 
-[STM32F7 discovery kit](https://www.st.com/en/evaluation-tools/32f769idiscovery.html) permite a los usuarios desarrollar y compartir aplicaciones con los microcontroladores de la serie STM32F7 basados en el núcleo [ARM®Cortex®-M7](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m7).
+[STM32F769 Discovery Kit](https://www.st.com/en/evaluation-tools/32f769idiscovery.html) permite a los usuarios desarrollar y compartir aplicaciones con los microcontroladores de la serie STM32F7 basados en el núcleo [ARM®Cortex®-M7](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m7).
 
 Permite una amplia diversidad de aplicaciones que se benefician de las características de audio, soporte multisensor, gráficos, seguridad, video y conectividad de alta velocidad. El soporte de conectividad Arduino™ proporciona capacidades de expansión ilimitadas con una gran variedad de placas complementarias especializadas, como la [Grove Base Shield V2.0 for Arduino](https://www.seeedstudio.com/Base-Shield-V2.html).
 
