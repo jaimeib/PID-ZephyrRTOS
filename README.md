@@ -8,7 +8,7 @@
 
 [Zephyr Project](https://zephyrproject.org/) es un pequeño sistema operativo de tiempo real (RTOS) para dispositivos con recursos limitados y embebidos (IoT) que admite múltiples arquitecturas. Se publica bajo la Licencia Apache 2.0. Zephyr incluye un kernel y todos los componentes y bibliotecas, controladores de dispositivos, pilas de protocolos, sistemas de archivos y actualizaciones de firmware necesarios para desarrollar una aplicación software completa.
 
-<img src="https://01.org/sites/default/files/zephyr-new-release-v1.8-2017.png">
+<img src="https://scontent.fmad7-1.fna.fbcdn.net/v/t39.30808-6/326517961_1402670820473519_2739122658723784484_n.png?_nc_cat=110&ccb=1-7&_nc_sid=5f2048&_nc_ohc=A9JxZK98K3YAb51eIPw&_nc_ht=scontent.fmad7-1.fna&oh=00_AfDeLibrDcnCcqCTik7pThPqA3cIskMlRzs8Z-h0XcX33A&oe=66274342" width=100%>
 
 ## Placa STM32F769 Discovery Kit
 
